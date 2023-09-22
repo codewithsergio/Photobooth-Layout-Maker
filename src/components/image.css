@@ -1,0 +1,18 @@
+/* Add this CSS to your stylesheet */
+.customizable-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.customizable-image {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+span {
+  margin-bottom: 1rem;
+}
