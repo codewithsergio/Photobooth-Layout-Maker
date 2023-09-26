@@ -146,7 +146,7 @@ const Image: React.FC<ImageProps> = ({
               objectFit: "contain",
               position: "absolute",
               cursor: draggingImage ? "grabbing" : "grab",
-              zIndex: 1,
+              zIndex: 0,
             }}
             onMouseDown={handleImageMouseDown}
             onMouseMove={handleMouseMove}

@@ -16,7 +16,7 @@ function App() {
   const [text, setText] = useState<string>("Jade and West Wedding");
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
-  const [textYPosition, setTextYPosition] = useState<number>(930);
+  const [textYPosition, setTextYPosition] = useState<number>(550);
   const [userImagePosition, setUserImagePosition] = useState<{
     x: number;
     y: number;
@@ -107,16 +107,16 @@ function App() {
     const ctx = canvas.getContext("2d");
 
     if (ctx) {
-      // Fill the canvas with the selected color
-      ctx.fillStyle = selectedColor;
-      ctx.fillRect(0, 0, width, height);
-
       // Draw the selected overlay image
       const overlayImg = new Image();
       overlayImg.onload = () => {
+        // Fill the canvas with the selected color
+        ctx.fillStyle = selectedColor;
+        ctx.fillRect(0, 0, width, height);
+
         ctx.drawImage(overlayImg, 0, 0, width, height);
 
-        // Draw the user-uploaded image at the specified position
+        // Draw the user-uploaded image at the specified position if it exists
         if (userImage) {
           const userImg = new Image();
           userImg.onload = () => {
@@ -160,6 +160,28 @@ function App() {
             link.click();
           };
           userImg.src = userImage;
+        } else {
+          // Draw text on the canvas (if no userImage)
+          ctx.fillStyle = "#ffffff";
+          ctx.font = `${fontSize}px ${fontFamily}`;
+          ctx.textAlign = "center";
+          const textLines = getLines(ctx, text, width);
+          for (let i = 0; i < textLines.length; i++) {
+            const line = textLines[i];
+            const lineHeight = 1.5 * fontSize;
+            ctx.fillText(
+              line,
+              width / 2,
+              textYPosition * 2.5 + 50 + i * lineHeight
+            );
+          }
+
+          // Create a download link for the canvas image
+          const url = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "custom-image.png";
+          link.click();
         }
       };
       overlayImg.src = selectedImage;
@@ -189,67 +211,75 @@ function App() {
   return (
     <div className="app">
       <h1>Photobooth Layout Maker</h1>
-      <LayoutImage
-        color={selectedColor}
-        width={width / 2.5}
-        height={height / 2.5}
-        text={text}
-        fontSize={fontSize / 2.2}
-        fontFamily={fontFamily}
-        textYPosition={textYPosition}
-        updatetextYPosition={updatetextYPosition}
-        updateUserImagePosition={updateUserImagePosition}
-        overlayImage={selectedImage}
-        userImage={userImage} // Pass the user-uploaded image
-      />
-      {/* Dropdown to select an image */}
-      <select
-        onChange={(e) => setSelectedImage(e.target.value)}
-        value={selectedImage}
-      >
-        {backdropOptions.map((option, index) => (
-          <option key={index} value={option}>
-            {backdropLabels[index]}
-          </option>
-        ))}
-      </select>
-      <ColorPicker onChange={handleColorChange} color={selectedColor} />
-      <input
-        type="text"
-        value={text}
-        onChange={handleTextChange}
-        placeholder="Enter text here"
-      />
-      <div>
-        <label htmlFor="fontSize">Font Size:</label>
-        <select
-          id="fontSize"
-          onChange={handleFontSizeChange}
-          value={`${fontSize}px`}
-        >
-          {fontSizes.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
-          ))}
-        </select>
+      <div className="workshop">
+        <div className="editingTools">
+          <h3>Choose a backdrop</h3>
+          <select
+            onChange={(e) => setSelectedImage(e.target.value)}
+            value={selectedImage}
+          >
+            {backdropOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {backdropLabels[index]}
+              </option>
+            ))}
+          </select>
+          <h3>Choose a background color</h3>
+          <ColorPicker onChange={handleColorChange} color={selectedColor} />
+          <h3>Main text</h3>
+          <input
+            type="text"
+            value={text}
+            onChange={handleTextChange}
+            placeholder="Enter text here"
+          />
+          <h3>Text size</h3>
+          <div>
+            <select
+              id="fontSize"
+              onChange={handleFontSizeChange}
+              value={`${fontSize}px`}
+            >
+              {fontSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <h3>Font family</h3>
+            <select
+              id="fontFamily"
+              onChange={handleFontFamilyChange}
+              value={fontFamily}
+            >
+              {fontFamilies.map((family) => (
+                <option key={family} value={family}>
+                  {family}
+                </option>
+              ))}
+            </select>
+          </div>
+          <h3>Add your own photo</h3>
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <h3>Done</h3>
+          <button onClick={() => downloadImage()}>Download Image</button>
+        </div>
+        <LayoutImage
+          color={selectedColor}
+          width={width / 2.5}
+          height={height / 2.5}
+          text={text}
+          fontSize={fontSize / 2.2}
+          fontFamily={fontFamily}
+          textYPosition={textYPosition}
+          updatetextYPosition={updatetextYPosition}
+          updateUserImagePosition={updateUserImagePosition}
+          overlayImage={selectedImage}
+          userImage={userImage} // Pass the user-uploaded image
+        />
       </div>
-      <div>
-        <label htmlFor="fontFamily">Font Family:</label>
-        <select
-          id="fontFamily"
-          onChange={handleFontFamilyChange}
-          value={fontFamily}
-        >
-          {fontFamilies.map((family) => (
-            <option key={family} value={family}>
-              {family}
-            </option>
-          ))}
-        </select>
-      </div>
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-      <button onClick={() => downloadImage()}>Download Image</button>
     </div>
   );
 }

@@ -10,3 +10,13 @@
   height: 100vh;
   color: white;
 }
+
+.workshop {
+  display: flex;
+}
+
+.editingTools {
+  display: flex;
+  flex-direction: column;
+  margin-right: 3rem;
+}
