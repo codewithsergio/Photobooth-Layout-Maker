@@ -1,7 +1,13 @@
 import React, { useState } from "react";
-import Image from "./components/Image";
+import LayoutImage from "./components/Image";
 import ColorPicker from "./components/ColorPicker";
 import "./App.css";
+import BlackBackDrop from "./assets/backdropChoices/black.png";
+import GoldBackDrop from "./assets/backdropChoices/gold.png";
+import GreenBackDrop from "./assets/backdropChoices/green.png";
+import SilverBackDrop from "./assets/backdropChoices/silver.png";
+import WhiteBackDrop from "./assets/backdropChoices/white.png";
+import BrownGlitterBackDrop from "./assets/backdropChoices/brownGlitter.png";
 
 function App() {
   const [width, setWidth] = useState(546);
@@ -11,10 +17,54 @@ function App() {
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
   const [textYPosition, setTextYPosition] = useState<number>(930);
+  const [userImagePosition, setUserImagePosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
+
+  const [selectedImage, setSelectedImage] = useState<string>(BlackBackDrop);
+  const backdropOptions = [
+    BlackBackDrop, // Default image
+    GoldBackDrop,
+    GreenBackDrop,
+    SilverBackDrop,
+    WhiteBackDrop,
+    BrownGlitterBackDrop,
+    // Add more image options as needed
+  ];
+
+  const backdropLabels = [
+    "Black", // Label for the default image
+    "Gold",
+    "Green",
+    "Silver",
+    "White",
+    "Brown",
+    // Add labels for other image options
+  ];
+
+  const [userImage, setUserImage] = useState<string | null>(null);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageSrc = e.target?.result as string;
+        setUserImage(imageSrc);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Function to update the variable
   const updatetextYPosition = (updatedValue: number) => {
     setTextYPosition(updatedValue);
+  };
+
+  // Function to update the variable
+  const updateUserImagePosition = (updatedValue: { x: number; y: number }) => {
+    setUserImagePosition(updatedValue);
   };
 
   const fontSizes = ["32px", "38px", "44px", "60px"];
@@ -55,25 +105,64 @@ function App() {
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext("2d");
+
     if (ctx) {
+      // Fill the canvas with the selected color
       ctx.fillStyle = selectedColor;
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "#ffffff";
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textAlign = "center";
-      const textLines = getLines(ctx, text, width);
-      for (let i = 0; i < textLines.length; i++) {
-        const line = textLines[i];
-        const lineHeight = 1.5 * fontSize;
-        ctx.fillText(line, width / 2, textYPosition + 930 + i * lineHeight);
-      }
+      // Draw the selected overlay image
+      const overlayImg = new Image();
+      overlayImg.onload = () => {
+        ctx.drawImage(overlayImg, 0, 0, width, height);
 
-      const url: string = canvas.toDataURL("image/png");
-      const link: HTMLAnchorElement = document.createElement("a");
-      link.href = url;
-      link.download = "custom-image.png";
-      link.click();
+        // Draw the user-uploaded image at the specified position
+        if (userImage) {
+          const userImg = new Image();
+          userImg.onload = () => {
+            const imgHeight = 100 * 2.5; // Set the desired width
+            const aspectRatio = userImg.width / userImg.height;
+            const imgWidth = imgHeight * aspectRatio; // Calculate height to maintain aspect ratio
+            console.log(imgWidth, imgHeight, aspectRatio);
+            var widthOffSetForDownload = 0;
+            if (imgWidth < imgHeight) {
+              widthOffSetForDownload += imgHeight - imgWidth;
+              widthOffSetForDownload /= 2;
+            }
+            ctx.drawImage(
+              userImg,
+              userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
+              userImagePosition.y * 2.5 + imgHeight + 1100,
+              imgWidth, // Adjust the width as needed
+              imgHeight // Adjust the height as needed
+            );
+
+            // Draw text on the canvas
+            ctx.fillStyle = "#ffffff";
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            ctx.textAlign = "center";
+            const textLines = getLines(ctx, text, width);
+            for (let i = 0; i < textLines.length; i++) {
+              const line = textLines[i];
+              const lineHeight = 1.5 * fontSize;
+              ctx.fillText(
+                line,
+                width / 2,
+                textYPosition * 2.5 + 50 + i * lineHeight
+              );
+            }
+
+            // Create a download link for the canvas image
+            const url = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "custom-image.png";
+            link.click();
+          };
+          userImg.src = userImage;
+        }
+      };
+      overlayImg.src = selectedImage;
     }
   }
 
@@ -100,16 +189,30 @@ function App() {
   return (
     <div className="app">
       <h1>Photobooth Layout Maker</h1>
-      <Image
+      <LayoutImage
         color={selectedColor}
         width={width / 2.5}
         height={height / 2.5}
         text={text}
-        fontSize={fontSize / 2}
+        fontSize={fontSize / 2.2}
         fontFamily={fontFamily}
         textYPosition={textYPosition}
         updatetextYPosition={updatetextYPosition}
+        updateUserImagePosition={updateUserImagePosition}
+        overlayImage={selectedImage}
+        userImage={userImage} // Pass the user-uploaded image
       />
+      {/* Dropdown to select an image */}
+      <select
+        onChange={(e) => setSelectedImage(e.target.value)}
+        value={selectedImage}
+      >
+        {backdropOptions.map((option, index) => (
+          <option key={index} value={option}>
+            {backdropLabels[index]}
+          </option>
+        ))}
+      </select>
       <ColorPicker onChange={handleColorChange} color={selectedColor} />
       <input
         type="text"
@@ -145,6 +248,7 @@ function App() {
           ))}
         </select>
       </div>
+      <input type="file" accept="image/*" onChange={handleImageUpload} />
       <button onClick={() => downloadImage()}>Download Image</button>
     </div>
   );
