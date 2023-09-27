@@ -1,11 +1,17 @@
 # Photobooth Layout Maker
 
-This project will be a layout maker so customers are able to design their own event's photobooth layouts.
+This project is a layout maker so customers are able to design their own event's photobooth layouts on the web and download their designs.
 
 ## Goals: users should be able to
 
 - add and update text
-- change text font
-- change text size
+- change text
+  - font
+  - size
+  - shadow
+  - color
 - change background color/image
-- add images to the design
+  - preselected images
+  - user uploaded
+- add a 100px image to the design
+- choose backdrop color
