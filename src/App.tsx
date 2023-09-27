@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import LayoutImage from "./components/Image";
 import ColorPicker from "./components/ColorPicker";
 import "./App.css";
@@ -8,21 +8,28 @@ import GreenBackDrop from "./assets/backdropChoices/green.png";
 import SilverBackDrop from "./assets/backdropChoices/silver.png";
 import WhiteBackDrop from "./assets/backdropChoices/white.png";
 import BrownGlitterBackDrop from "./assets/backdropChoices/brownGlitter.png";
+import Pattern1 from "./assets/backgroundPreselected/pattern1.png";
+import Pattern2 from "./assets/backgroundPreselected/pattern2.png";
+import Pattern3 from "./assets/backgroundPreselected/pattern3.png";
+import Pattern4 from "./assets/backgroundPreselected/pattern4.png";
+import Pattern5 from "./assets/backgroundPreselected/pattern5.png";
+import Pattern6 from "./assets/backgroundPreselected/pattern6.png";
+import Pattern7 from "./assets/backgroundPreselected/pattern7.png";
 
 function App() {
   const [width, setWidth] = useState(546);
   const [height, setHeight] = useState(1600);
-  const [selectedColor, setSelectedColor] = useState("#ff9900");
-  const [text, setText] = useState<string>("Jade and West Wedding");
+  const [canvasColor, setCanvasColor] = useState("#1E90FF");
+  const [mainText, setMainText] = useState<string>("Jade and West Wedding"); // Default text
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
-  const [textYPosition, setTextYPosition] = useState<number>(550);
+  const [mainTextYPosition, setMainTextYPosition] = useState<number>(550); // Default text position
   const [userImagePosition, setUserImagePosition] = useState<{
     x: number;
     y: number;
   }>({ x: 0, y: 0 });
 
-  const [selectedImage, setSelectedImage] = useState<string>(BlackBackDrop);
+  const [backdropImage, setBackdropImage] = useState<string>(BlackBackDrop);
   const backdropOptions = [
     BlackBackDrop, // Default image
     GoldBackDrop,
@@ -30,7 +37,6 @@ function App() {
     SilverBackDrop,
     WhiteBackDrop,
     BrownGlitterBackDrop,
-    // Add more image options as needed
   ];
 
   const backdropLabels = [
@@ -43,10 +49,37 @@ function App() {
     // Add labels for other image options
   ];
 
+  const [wallpaperImage, setWallpaperImage] = useState<string | undefined>(
+    undefined
+  );
+  const wallpaperOptions = [
+    Pattern1, // Default image
+    Pattern2,
+    Pattern3,
+    Pattern4,
+    Pattern5,
+    Pattern6,
+    Pattern7,
+    "",
+  ];
+
+  const wallpaperLabels = [
+    "rainbow glass", // Default image
+    "black glass",
+    "colorful squares",
+    "white roses",
+    "flowers",
+    "cubes",
+    "blue floral",
+    "None",
+  ];
+
   const [userImage, setUserImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    console.log(event.target.files);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -57,14 +90,19 @@ function App() {
     }
   };
 
-  // Function to update the variable
-  const updatetextYPosition = (updatedValue: number) => {
-    setTextYPosition(updatedValue);
+  const updateMainTextYPosition = (updatedValue: number) => {
+    setMainTextYPosition(updatedValue);
   };
 
-  // Function to update the variable
   const updateUserImagePosition = (updatedValue: { x: number; y: number }) => {
     setUserImagePosition(updatedValue);
+  };
+
+  const handleDeleteImage = () => {
+    setUserImage("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset the file input
+    }
   };
 
   const fontSizes = ["32px", "38px", "44px", "60px"];
@@ -76,6 +114,13 @@ function App() {
     "Lato",
     "Playfair Display",
   ];
+
+  const [addTextShadow, setAddTextShadow] = useState(false);
+  const [textShadowColor, setTextShadowColor] = useState("#000000");
+
+  const handleTextShadowColorChange = (newColor: string) => {
+    setTextShadowColor(newColor);
+  };
 
   function getLines(
     ctx: CanvasRenderingContext2D,
@@ -100,6 +145,38 @@ function App() {
     return lines;
   }
 
+  function drawText(ctx: CanvasRenderingContext2D) {
+    // Draw text on the canvas
+    ctx.fillStyle = mainTextColor;
+    ctx.font = `${fontSize + 6}px ${fontFamily}`;
+    ctx.textAlign = "center";
+    const textLines = getLines(ctx, mainText, width);
+    if (addTextShadow) {
+      ctx.shadowColor = textShadowColor;
+      ctx.shadowBlur = 2 * 2.5;
+      ctx.shadowOffsetY = 2 * 2.5;
+      ctx.shadowOffsetX = 2 * 2.5;
+    }
+    for (let i = 0; i < textLines.length; i++) {
+      const line = textLines[i];
+      const lineHeight = 1.5 * fontSize;
+      ctx.fillText(
+        line,
+        width / 2,
+        mainTextYPosition * 2.5 + 50 + i * lineHeight
+      );
+    }
+  }
+
+  function downloadFinalImageLink(canvas: HTMLCanvasElement) {
+    // Create a download link for the canvas image
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "custom-image.png";
+    link.click();
+  }
+
   function downloadImage() {
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -111,7 +188,7 @@ function App() {
       const overlayImg = new Image();
       overlayImg.onload = () => {
         // Fill the canvas with the selected color
-        ctx.fillStyle = selectedColor;
+        ctx.fillStyle = canvasColor;
         ctx.fillRect(0, 0, width, height);
 
         ctx.drawImage(overlayImg, 0, 0, width, height);
@@ -120,7 +197,7 @@ function App() {
         if (userImage) {
           const userImg = new Image();
           userImg.onload = () => {
-            const imgHeight = 100 * 2.5; // Set the desired width
+            const imgHeight = 100 * 2.5;
             const aspectRatio = userImg.width / userImg.height;
             const imgWidth = imgHeight * aspectRatio; // Calculate height to maintain aspect ratio
             console.log(imgWidth, imgHeight, aspectRatio);
@@ -128,72 +205,61 @@ function App() {
             if (imgWidth < imgHeight) {
               widthOffSetForDownload += imgHeight - imgWidth;
               widthOffSetForDownload /= 2;
+            } else {
+              widthOffSetForDownload -= imgWidth - imgHeight;
+              widthOffSetForDownload /= 2;
             }
             ctx.drawImage(
               userImg,
               userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
               userImagePosition.y * 2.5 + imgHeight + 1100,
-              imgWidth, // Adjust the width as needed
-              imgHeight // Adjust the height as needed
+              imgWidth,
+              imgHeight
             );
 
-            // Draw text on the canvas
-            ctx.fillStyle = "#ffffff";
-            ctx.font = `${fontSize}px ${fontFamily}`;
-            ctx.textAlign = "center";
-            const textLines = getLines(ctx, text, width);
-            for (let i = 0; i < textLines.length; i++) {
-              const line = textLines[i];
-              const lineHeight = 1.5 * fontSize;
-              ctx.fillText(
-                line,
-                width / 2,
-                textYPosition * 2.5 + 50 + i * lineHeight
-              );
-            }
+            /////////////////////////
+            // Draw Text on screen //
+            /////////////////////////
 
-            // Create a download link for the canvas image
-            const url = canvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "custom-image.png";
-            link.click();
+            drawText(ctx);
+
+            /////////////////////////
+            // Download Final Photo //
+            /////////////////////////
+
+            downloadFinalImageLink(canvas);
           };
           userImg.src = userImage;
         } else {
-          // Draw text on the canvas (if no userImage)
-          ctx.fillStyle = "#ffffff";
-          ctx.font = `${fontSize}px ${fontFamily}`;
-          ctx.textAlign = "center";
-          const textLines = getLines(ctx, text, width);
-          for (let i = 0; i < textLines.length; i++) {
-            const line = textLines[i];
-            const lineHeight = 1.5 * fontSize;
-            ctx.fillText(
-              line,
-              width / 2,
-              textYPosition * 2.5 + 50 + i * lineHeight
-            );
-          }
+          /////////////////////////
+          // Draw Text on screen //
+          /////////////////////////
 
-          // Create a download link for the canvas image
-          const url = canvas.toDataURL("image/png");
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "custom-image.png";
-          link.click();
+          drawText(ctx);
+
+          /////////////////////////
+          // Download Photo //
+          /////////////////////////
+
+          downloadFinalImageLink(canvas);
         }
       };
-      overlayImg.src = selectedImage;
+      overlayImg.src = backdropImage;
     }
   }
 
   const handleColorChange = (newColor: string) => {
-    setSelectedColor(newColor);
+    setCanvasColor(newColor);
+  };
+
+  const [mainTextColor, setMainTextColor] = useState("#000000");
+
+  const handleMainTextColorChange = (newColor: string) => {
+    setMainTextColor(newColor);
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
+    setMainText(event.target.value);
   };
 
   const handleFontSizeChange = (
@@ -215,8 +281,8 @@ function App() {
         <div className="editingTools">
           <h3>Choose a backdrop</h3>
           <select
-            onChange={(e) => setSelectedImage(e.target.value)}
-            value={selectedImage}
+            onChange={(e) => setBackdropImage(e.target.value)}
+            value={backdropImage}
           >
             {backdropOptions.map((option, index) => (
               <option key={index} value={option}>
@@ -224,14 +290,41 @@ function App() {
               </option>
             ))}
           </select>
+          <h3>Choose a wallpaper</h3>
+          <select
+            onChange={(e) => setWallpaperImage(e.target.value)}
+            value={wallpaperImage}
+          >
+            {wallpaperOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {wallpaperLabels[index]}
+              </option>
+            ))}
+          </select>
           <h3>Choose a background color</h3>
-          <ColorPicker onChange={handleColorChange} color={selectedColor} />
+          <ColorPicker onChange={handleColorChange} color={canvasColor} />
           <h3>Main text</h3>
           <input
             type="text"
-            value={text}
+            value={mainText}
             onChange={handleTextChange}
             placeholder="Enter text here"
+          />
+          <h3>Change text color</h3>
+          <ColorPicker
+            onChange={handleMainTextColorChange}
+            color={mainTextColor}
+          />
+          <h3>Text Effects</h3>
+          <input
+            type="checkbox"
+            checked={addTextShadow}
+            onChange={() => setAddTextShadow(!addTextShadow)}
+          />
+          <h4>Text Effects Color</h4>
+          <ColorPicker
+            onChange={handleTextShadowColorChange}
+            color={textShadowColor}
           />
           <h3>Text size</h3>
           <div>
@@ -262,22 +355,31 @@ function App() {
             </select>
           </div>
           <h3>Add your own photo</h3>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            ref={fileInputRef}
+          />
+          <button onClick={handleDeleteImage}>Delete</button>
           <h3>Done</h3>
           <button onClick={() => downloadImage()}>Download Image</button>
         </div>
         <LayoutImage
-          color={selectedColor}
+          canvasColor={canvasColor}
+          mainTextColor={mainTextColor}
           width={width / 2.5}
           height={height / 2.5}
-          text={text}
+          mainText={mainText}
           fontSize={fontSize / 2.2}
           fontFamily={fontFamily}
-          textYPosition={textYPosition}
-          updatetextYPosition={updatetextYPosition}
+          updateMainTextYPosition={updateMainTextYPosition}
           updateUserImagePosition={updateUserImagePosition}
-          overlayImage={selectedImage}
-          userImage={userImage} // Pass the user-uploaded image
+          backdropImage={backdropImage}
+          userImage={userImage}
+          addTextShadow={addTextShadow}
+          textShadowColor={textShadowColor}
+          wallpaperImage={wallpaperImage}
         />
       </div>
     </div>

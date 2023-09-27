@@ -1,31 +1,38 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./image.css";
 
 interface ImageProps {
-  color: string;
+  canvasColor: string;
   width: number;
   height: number;
-  text: string;
+  mainText: string;
   fontSize: number;
   fontFamily: string;
-  textYPosition: number;
-  updatetextYPosition: (updatedValue: number) => void;
+  updateMainTextYPosition: (updatedValue: number) => void;
   updateUserImagePosition: (updatedValue: { x: number; y: number }) => void;
-  overlayImage?: string;
+  backdropImage?: string;
   userImage: string | null;
+  mainTextColor: string;
+  addTextShadow: boolean;
+  textShadowColor: string;
+  wallpaperImage: string | undefined;
 }
 
 const Image: React.FC<ImageProps> = ({
-  color,
+  canvasColor,
   width,
   height,
-  text,
+  mainText,
   fontSize,
   fontFamily,
-  updatetextYPosition,
+  updateMainTextYPosition,
   updateUserImagePosition,
-  overlayImage,
+  backdropImage,
   userImage,
+  mainTextColor,
+  addTextShadow,
+  textShadowColor,
+  wallpaperImage,
 }) => {
   const [textPosition, setTextPosition] = useState({ x: 0, y: 550 });
   const [textIsDragging, setTextIsDragging] = useState(false);
@@ -71,7 +78,6 @@ const Image: React.FC<ImageProps> = ({
   };
 
   const handleMouseUp = () => {
-    console.log(imagePosition);
     updateUserImagePosition(imagePosition);
     setDraggingImage(false);
   };
@@ -101,7 +107,7 @@ const Image: React.FC<ImageProps> = ({
           const clampedY = Math.max(minY, Math.min(maxY, newY));
 
           setTextPosition({ x: 0, y: clampedY });
-          updatetextYPosition(clampedY);
+          updateMainTextYPosition(clampedY);
         }
       };
 
@@ -126,15 +132,39 @@ const Image: React.FC<ImageProps> = ({
       <div
         className="customizable-image"
         style={{
-          backgroundColor: color,
+          backgroundColor: `${!wallpaperImage ? canvasColor : "#ffffff"}`,
           width: `${width}px`,
           height: `${height}px`,
           position: "relative",
           textAlign: "center", // Center text horizontally
-          backgroundImage: overlayImage ? `url(${overlayImage})` : "none", // Apply the overlay image if provided
           backgroundSize: "cover", // Adjust this as needed
+          overflow: "hidden",
         }}
       >
+        <img
+          src={backdropImage}
+          alt="Backdrop Image"
+          style={{
+            width: `${width}px`,
+            height: `${height}px`,
+            zIndex: 3,
+          }}
+        ></img>
+        {wallpaperImage && (
+          <img
+            src={wallpaperImage}
+            alt="Wallpaper Image"
+            style={{
+              width: "auto",
+              height: `${height + 5}px`,
+              objectFit: "contain",
+              position: "absolute",
+              zIndex: 0,
+              opacity: 0.75,
+            }}
+          ></img>
+        )}
+
         {userImage && (
           <img
             src={userImage}
@@ -146,7 +176,7 @@ const Image: React.FC<ImageProps> = ({
               objectFit: "contain",
               position: "absolute",
               cursor: draggingImage ? "grabbing" : "grab",
-              zIndex: 0,
+              zIndex: 9,
             }}
             onMouseDown={handleImageMouseDown}
             onMouseMove={handleMouseMove}
@@ -156,7 +186,7 @@ const Image: React.FC<ImageProps> = ({
 
         <span
           style={{
-            color: "white",
+            color: mainTextColor,
             fontSize: `${fontSize}px`,
             fontFamily: fontFamily,
             userSelect: "none",
@@ -165,11 +195,13 @@ const Image: React.FC<ImageProps> = ({
             left: `${textPosition.x}px`,
             top: `${textPosition.y}px`,
             width: "100%", // Expand the text to 100% width for centering
+            textShadow: addTextShadow ? `2px 2px 2px ${textShadowColor}` : "",
+            zIndex: 10,
           }}
           draggable="false"
           ref={textRef}
         >
-          {text}
+          {mainText}
         </span>
       </div>
     </div>
