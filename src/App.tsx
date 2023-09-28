@@ -23,6 +23,14 @@ function App() {
   const [mainText, setMainText] = useState<string>("Jade and West Wedding"); // Default text
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
+
+  const [secondaryFontSize, setSecondaryFontSize] = useState<number>(38);
+  const [secondaryFontFamily, setSecondaryFontFamily] =
+    useState<string>("Playfair Display");
+
+  const [secondaryTextColor, setSecondaryTextColor] =
+    useState<string>("#000000");
+
   const [mainTextYPosition, setMainTextYPosition] = useState<number>(550); // Default text position
   const [userImagePosition, setUserImagePosition] = useState<{
     x: number;
@@ -94,6 +102,12 @@ function App() {
     setMainTextYPosition(updatedValue);
   };
 
+  const [secondaryTextYPosition, setSecondaryTextYPosition] = useState(600);
+
+  const updateSecondaryTextYPosition = (updatedValue: number) => {
+    setSecondaryTextYPosition(updatedValue);
+  };
+
   const updateUserImagePosition = (updatedValue: { x: number; y: number }) => {
     setUserImagePosition(updatedValue);
   };
@@ -118,8 +132,30 @@ function App() {
   const [addTextShadow, setAddTextShadow] = useState(false);
   const [textShadowColor, setTextShadowColor] = useState("#000000");
 
+  const [addSecondaryTextShadow, setAddSecondaryTextShadow] = useState(false);
+  const [secondaryTextShadowColor, setSecondaryTextShadowColor] =
+    useState("#000000");
+
   const handleTextShadowColorChange = (newColor: string) => {
     setTextShadowColor(newColor);
+  };
+
+  const handleSecondaryTextShadowColorChange = (newColor: string) => {
+    setSecondaryTextShadowColor(newColor);
+  };
+
+  const [secondaryText, setSecondaryText] = useState("October 5th, 2023");
+
+  const [wantSecondaryText, setWantSecondaryText] = useState(false);
+
+  const handleAddSecondaryText = () => {
+    setWantSecondaryText(true);
+  };
+
+  const handleSecondaryTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSecondaryText(event.target.value);
   };
 
   function getLines(
@@ -168,6 +204,30 @@ function App() {
     }
   }
 
+  function drawSecondaryText(ctx: CanvasRenderingContext2D) {
+    console.log("drawing the secondary text");
+    // Draw text on the canvas
+    ctx.fillStyle = secondaryTextColor;
+    ctx.font = `${secondaryFontSize + 6}px ${secondaryFontFamily}`;
+    ctx.textAlign = "center";
+    const textLines = getLines(ctx, secondaryText, width);
+    if (addSecondaryTextShadow) {
+      ctx.shadowColor = secondaryTextShadowColor;
+      ctx.shadowBlur = 2 * 2.5;
+      ctx.shadowOffsetY = 2 * 2.5;
+      ctx.shadowOffsetX = 2 * 2.5;
+    }
+    for (let i = 0; i < textLines.length; i++) {
+      const line = textLines[i];
+      const lineHeight = 1.5 * secondaryFontSize;
+      ctx.fillText(
+        line,
+        width / 2,
+        secondaryTextYPosition * 2.5 + 50 + i * lineHeight
+      );
+    }
+  }
+
   function downloadFinalImageLink(canvas: HTMLCanvasElement) {
     // Create a download link for the canvas image
     const url = canvas.toDataURL("image/png");
@@ -203,6 +263,7 @@ function App() {
 
           ctx.globalAlpha = 1;
 
+          // 4 square photos //
           // Draw the selected overlay image
           const overlayImg = new Image();
           overlayImg.onload = () => {
@@ -236,6 +297,9 @@ function App() {
 
                 // Draw Text on screen
                 drawText(ctx);
+                if (wantSecondaryText) {
+                  drawSecondaryText(ctx);
+                }
 
                 // Download Final Photo
                 downloadFinalImageLink(canvas);
@@ -246,6 +310,10 @@ function App() {
               // Draw Text on screen
               drawText(ctx);
 
+              if (wantSecondaryText) {
+                drawSecondaryText(ctx);
+              }
+
               // Download Final Photo
               downloadFinalImageLink(canvas);
             }
@@ -254,6 +322,7 @@ function App() {
         };
         wallpaperImg.src = wallpaperImage;
       } else {
+        ctx.globalAlpha = 1;
         // If no wallpaperImage is defined, continue with drawing the overlay image
         const overlayImg = new Image();
         overlayImg.onload = () => {
@@ -289,6 +358,9 @@ function App() {
 
               // Draw Text on screen
               drawText(ctx);
+              if (wantSecondaryText) {
+                drawSecondaryText(ctx);
+              }
 
               // Download Final Photo
               downloadFinalImageLink(canvas);
@@ -298,6 +370,9 @@ function App() {
             // If no userImage is defined, continue with drawing text and downloading
             // Draw Text on screen
             drawText(ctx);
+            if (wantSecondaryText) {
+              drawSecondaryText(ctx);
+            }
 
             // Download Final Photo
             downloadFinalImageLink(canvas);
@@ -318,6 +393,10 @@ function App() {
     setMainTextColor(newColor);
   };
 
+  const handleSecondaryTextColorChange = (newColor: string) => {
+    setSecondaryTextColor(newColor);
+  };
+
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMainText(event.target.value);
   };
@@ -328,10 +407,64 @@ function App() {
     setFontSize(parseInt(event.target.value));
   };
 
+  const handleSecondaryFontSizeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSecondaryFontSize(parseInt(event.target.value));
+  };
+
   const handleFontFamilyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setFontFamily(event.target.value);
+  };
+
+  const handleSecondaryFontFamilyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSecondaryFontFamily(event.target.value);
+  };
+
+  type SectionVisibility = {
+    backdesign: boolean;
+    mainText: boolean;
+    secondaryText: boolean;
+    [key: string]: boolean;
+  };
+
+  const [sectionsVisible, setSectionsVisible] = useState<SectionVisibility>({
+    backdesign: false,
+    mainText: true,
+    secondaryText: false,
+  });
+
+  // const toggleSection = (section: keyof SectionVisibility) => {
+  //   setSectionsVisible({
+  //     ...sectionsVisible,
+  //     [section]: !sectionsVisible[section],
+  //   });
+  // };
+
+  const toggleSection = (section: keyof SectionVisibility) => {
+    setSectionsVisible((prevVisibility) => {
+      const updatedVisibility: SectionVisibility = {
+        backdesign: false,
+        mainText: true,
+        secondaryText: false,
+      };
+
+      for (const key in prevVisibility) {
+        if (Object.prototype.hasOwnProperty.call(prevVisibility, key)) {
+          updatedVisibility[key] = key === section ? true : false;
+        }
+      }
+
+      return updatedVisibility;
+    });
+  };
+
+  const handleDeleteSecondaryText = () => {
+    setWantSecondaryText(false);
   };
 
   return (
@@ -339,80 +472,210 @@ function App() {
       <h1>Photobooth Layout Maker</h1>
       <div className="workshop">
         <div className="editingToolsLeft">
-          <h3>Choose a backdrop</h3>
-          <select
-            onChange={(e) => setBackdropImage(e.target.value)}
-            value={backdropImage}
+          <h2
+            className="optionsTitle"
+            onClick={() => toggleSection("backdesign")}
           >
-            {backdropOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {backdropLabels[index]}
-              </option>
-            ))}
-          </select>
-          <h3>Choose a wallpaper</h3>
-          <select
-            onChange={(e) => setWallpaperImage(e.target.value)}
-            value={wallpaperImage}
+            Open BackDesign Options
+          </h2>
+          <div
+            className={`tool-section ${
+              !sectionsVisible.backdesign ? "hidden" : ""
+            }`}
           >
-            {wallpaperOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {wallpaperLabels[index]}
-              </option>
-            ))}
-          </select>
-          <h3>Choose a background color</h3>
-          <ColorPicker onChange={handleColorChange} color={canvasColor} />
-          <h3>Main text</h3>
-          <input
-            type="text"
-            value={mainText}
-            onChange={handleTextChange}
-            placeholder="Enter text here"
-          />
-          <h3>Change text color</h3>
-          <ColorPicker
-            onChange={handleMainTextColorChange}
-            color={mainTextColor}
-          />
-          <h3>Text Effects</h3>
-          <input
-            type="checkbox"
-            checked={addTextShadow}
-            onChange={() => setAddTextShadow(!addTextShadow)}
-          />
-          <h4>Text Effects Color</h4>
-          <ColorPicker
-            onChange={handleTextShadowColorChange}
-            color={textShadowColor}
-          />
-          <h3>Text size</h3>
-          <div>
-            <select
-              id="fontSize"
-              onChange={handleFontSizeChange}
-              value={`${fontSize}px`}
-            >
-              {fontSizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+            <div className="flexRow">
+              <h3 onClick={() => toggleSection("backdesign")}>Backdrop</h3>
+              <select
+                onChange={(e) => setBackdropImage(e.target.value)}
+                value={backdropImage}
+              >
+                {backdropOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {backdropLabels[index]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flexRow">
+              <h3>Wallpaper</h3>
+              <select
+                onChange={(e) => setWallpaperImage(e.target.value)}
+                value={wallpaperImage}
+              >
+                {wallpaperOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {wallpaperLabels[index]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flexRow">
+              <h3>Solid Background color</h3>
+              <ColorPicker onChange={handleColorChange} color={canvasColor} />
+            </div>
           </div>
-          <div>
-            <h3>Font family</h3>
-            <select
-              id="fontFamily"
-              onChange={handleFontFamilyChange}
-              value={fontFamily}
-            >
-              {fontFamilies.map((family) => (
-                <option key={family} value={family}>
-                  {family}
-                </option>
-              ))}
-            </select>
+          <h2
+            className="optionsTitle"
+            onClick={() => toggleSection("mainText")}
+          >
+            Open Main Text Options
+          </h2>
+          <div
+            className={`tool-section ${
+              !sectionsVisible.mainText ? "hidden" : ""
+            }`}
+          >
+            <div className="flexRow">
+              <h3>Main text</h3>
+              <input
+                type="text"
+                value={mainText}
+                onChange={handleTextChange}
+                placeholder="Enter text here"
+              />
+            </div>
+            <div className="flexRow">
+              <h3 onClick={() => toggleSection("mainText")}>
+                Change text color
+              </h3>
+              <ColorPicker
+                onChange={handleMainTextColorChange}
+                color={mainTextColor}
+              />
+            </div>
+            <div className="flexRow">
+              <p>Shadows</p>
+              <input
+                type="checkbox"
+                checked={addTextShadow}
+                onChange={() => setAddTextShadow(!addTextShadow)}
+              />
+            </div>
+            <div className="flexRow">
+              <h3>Text Effects Color</h3>
+              <ColorPicker
+                onChange={handleTextShadowColorChange}
+                color={textShadowColor}
+              />
+            </div>
+            <div className="flexRow">
+              <h3>Text size</h3>
+              <div>
+                <select
+                  id="fontSize"
+                  onChange={handleFontSizeChange}
+                  value={`${fontSize}px`}
+                >
+                  {fontSizes.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flexRow">
+              <h3>Font family</h3>
+              <select
+                id="fontFamily"
+                onChange={handleFontFamilyChange}
+                value={fontFamily}
+              >
+                {fontFamilies.map((family) => (
+                  <option key={family} value={family}>
+                    {family}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <h2
+            className="optionsTitle"
+            onClick={() => toggleSection("secondaryText")}
+          >
+            Open Secondary Text Options
+          </h2>
+          <div
+            className={`tool-section ${
+              !sectionsVisible.secondaryText ? "hidden" : ""
+            }`}
+          >
+            {!wantSecondaryText && (
+              <>
+                <h3>Add a tagline</h3>
+                <button id="addSecondaryText" onClick={handleAddSecondaryText}>
+                  Add Secondary Text
+                </button>
+              </>
+            )}
+            {wantSecondaryText && (
+              <>
+                <h3>Secondary Text</h3>
+                <input
+                  type="text"
+                  value={secondaryText}
+                  onChange={handleSecondaryTextChange}
+                  placeholder="Enter text here"
+                />
+                <button onClick={handleDeleteSecondaryText}>
+                  Delete secondary text
+                </button>
+                <div className="flexRow">
+                  <h3>Change text color</h3>
+                  <ColorPicker
+                    onChange={handleSecondaryTextColorChange}
+                    color={mainTextColor}
+                  />
+                </div>
+                <div className="flexRow">
+                  <p>Shadows</p>
+                  <input
+                    type="checkbox"
+                    checked={addSecondaryTextShadow}
+                    onChange={() =>
+                      setAddSecondaryTextShadow(!addSecondaryTextShadow)
+                    }
+                  />
+                </div>
+                <div className="flexRow">
+                  <h3>Text Effects Color</h3>
+                  <ColorPicker
+                    onChange={handleSecondaryTextShadowColorChange}
+                    color={secondaryTextShadowColor}
+                  />
+                </div>
+                <div className="flexRow">
+                  <h3>Text size</h3>
+                  <div>
+                    <select
+                      id="fontSize"
+                      onChange={handleSecondaryFontSizeChange}
+                      value={`${secondaryFontSize}px`}
+                    >
+                      {fontSizes.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flexRow">
+                  <h3>Font family</h3>
+                  <select
+                    id="fontFamily"
+                    onChange={handleSecondaryFontFamilyChange}
+                    value={secondaryFontFamily}
+                  >
+                    {fontFamilies.map((family) => (
+                      <option key={family} value={family}>
+                        {family}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <LayoutImage
@@ -430,6 +693,14 @@ function App() {
           addTextShadow={addTextShadow}
           textShadowColor={textShadowColor}
           wallpaperImage={wallpaperImage}
+          wantSecondaryText={wantSecondaryText}
+          secondaryText={secondaryText}
+          updateSecondaryTextYPosition={updateSecondaryTextYPosition}
+          secondaryFontSize={secondaryFontSize / 2.2}
+          secondaryFontFamily={secondaryFontFamily}
+          addSecondaryTextShadow={addSecondaryTextShadow}
+          secondaryTextShadowColor={secondaryTextShadowColor}
+          secondaryTextColor={secondaryTextColor}
         />
         <div className="editingToolsRight">
           <h3>Add your own photo</h3>

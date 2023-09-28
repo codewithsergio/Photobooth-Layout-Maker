@@ -16,6 +16,14 @@ interface ImageProps {
   addTextShadow: boolean;
   textShadowColor: string;
   wallpaperImage: string | undefined;
+  wantSecondaryText: boolean;
+  secondaryText: string;
+  updateSecondaryTextYPosition: (updatedValue: number) => void;
+  secondaryFontSize: number;
+  secondaryFontFamily: string;
+  addSecondaryTextShadow: boolean;
+  secondaryTextShadowColor: string;
+  secondaryTextColor: string;
 }
 
 const Image: React.FC<ImageProps> = ({
@@ -33,11 +41,30 @@ const Image: React.FC<ImageProps> = ({
   addTextShadow,
   textShadowColor,
   wallpaperImage,
+  wantSecondaryText,
+  secondaryText,
+  updateSecondaryTextYPosition,
+  secondaryFontSize,
+  secondaryFontFamily,
+  addSecondaryTextShadow,
+  secondaryTextShadowColor,
+  secondaryTextColor,
 }) => {
   const [textPosition, setTextPosition] = useState({ x: 0, y: 550 });
   const [textIsDragging, setTextIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const textRef = useRef<HTMLSpanElement | null>(null);
+
+  const [secondaryTextPosition, setSecondaryTextPosition] = useState({
+    x: 0,
+    y: 600,
+  });
+  const [secondaryTextIsDragging, setSecondaryTextIsDragging] = useState(false);
+  const [secondaryTextOffset, setSecondaryTextOffset] = useState({
+    x: 0,
+    y: 0,
+  });
+  const secondaryTextRef = useRef<HTMLSpanElement | null>(null);
 
   const [draggingImage, setDraggingImage] = useState(false);
   const [dragImageStartPos, setDragImageStartPos] = useState({
@@ -120,12 +147,60 @@ const Image: React.FC<ImageProps> = ({
       document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
-        textRef.current!.removeEventListener("mousedown", handleMouseDown);
+        if (textRef.current) {
+          textRef.current.removeEventListener("mousedown", handleMouseDown);
+        }
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [textIsDragging, offset, height]);
+
+  useEffect(() => {
+    if (secondaryTextRef.current) {
+      const handleMouseDown = (e: MouseEvent) => {
+        setSecondaryTextIsDragging(true);
+        const boundingBox = secondaryTextRef.current!.getBoundingClientRect();
+        const secondaryTextOffsetY = e.clientY - boundingBox.top + 90;
+        setSecondaryTextOffset({ x: 0, y: secondaryTextOffsetY }); // Fixed X position to 0
+      };
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (secondaryTextIsDragging) {
+          const newY = e.clientY - secondaryTextOffset.y;
+
+          // Ensure the text stays within the canvas boundaries
+          const maxY = height - secondaryTextRef.current!.offsetHeight;
+          const minY = height - 150; // Minimum Y position 200px from the bottom
+
+          // Restrict the Y position
+          const clampedY = Math.max(minY, Math.min(maxY, newY));
+
+          setSecondaryTextPosition({ x: 0, y: clampedY });
+          updateSecondaryTextYPosition(clampedY);
+        }
+      };
+
+      const handleMouseUp = () => {
+        setSecondaryTextIsDragging(false);
+      };
+
+      secondaryTextRef.current.addEventListener("mousedown", handleMouseDown);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        if (secondaryTextRef.current) {
+          secondaryTextRef.current!.removeEventListener(
+            "mousedown",
+            handleMouseDown
+          );
+        }
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [wantSecondaryText, secondaryTextIsDragging, secondaryTextOffset, height]);
 
   return (
     <div className="customizable-image-container">
@@ -149,6 +224,7 @@ const Image: React.FC<ImageProps> = ({
             height: `${height}px`,
             zIndex: 3,
           }}
+          draggable="false"
         ></img>
         {wallpaperImage && (
           <img
@@ -203,6 +279,30 @@ const Image: React.FC<ImageProps> = ({
         >
           {mainText}
         </span>
+
+        {wantSecondaryText && (
+          <span
+            style={{
+              color: secondaryTextColor,
+              fontSize: `${secondaryFontSize}px`,
+              fontFamily: secondaryFontFamily,
+              userSelect: "none",
+              cursor: secondaryTextIsDragging ? "grabbing" : "grab",
+              position: "absolute",
+              left: `${secondaryTextPosition.x}px`,
+              top: `${secondaryTextPosition.y}px`,
+              width: "100%", // Expand the text to 100% width for centering
+              textShadow: addSecondaryTextShadow
+                ? `2px 2px 2px ${secondaryTextShadowColor}`
+                : "",
+              zIndex: 10,
+            }}
+            draggable="false"
+            ref={secondaryTextRef}
+          >
+            {secondaryText}
+          </span>
+        )}
       </div>
     </div>
   );
