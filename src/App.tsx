@@ -53,17 +53,18 @@ function App() {
     undefined
   );
   const wallpaperOptions = [
-    Pattern1, // Default image
+    "", // Default image
+    Pattern1,
     Pattern2,
     Pattern3,
     Pattern4,
     Pattern5,
     Pattern6,
     Pattern7,
-    "",
   ];
 
   const wallpaperLabels = [
+    "None",
     "rainbow glass", // Default image
     "black glass",
     "colorful squares",
@@ -71,7 +72,6 @@ function App() {
     "flowers",
     "cubes",
     "blue floral",
-    "None",
   ];
 
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -184,67 +184,127 @@ function App() {
     const ctx = canvas.getContext("2d");
 
     if (ctx) {
-      // Draw the selected overlay image
-      const overlayImg = new Image();
-      overlayImg.onload = () => {
-        // Fill the canvas with the selected color
-        ctx.fillStyle = canvasColor;
-        ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
 
-        ctx.drawImage(overlayImg, 0, 0, width, height);
+      ctx.globalAlpha = 0.75;
+      // Draw the wallpaperImage if it is defined
+      if (wallpaperImage) {
+        const wallpaperImg = new Image();
+        wallpaperImg.onload = () => {
+          ctx.drawImage(
+            wallpaperImg,
+            // Adjust the coordinates and size as needed
+            0,
+            0,
+            width,
+            height
+          );
 
-        // Draw the user-uploaded image at the specified position if it exists
-        if (userImage) {
-          const userImg = new Image();
-          userImg.onload = () => {
-            const imgHeight = 100 * 2.5;
-            const aspectRatio = userImg.width / userImg.height;
-            const imgWidth = imgHeight * aspectRatio; // Calculate height to maintain aspect ratio
-            console.log(imgWidth, imgHeight, aspectRatio);
-            var widthOffSetForDownload = 0;
-            if (imgWidth < imgHeight) {
-              widthOffSetForDownload += imgHeight - imgWidth;
-              widthOffSetForDownload /= 2;
+          ctx.globalAlpha = 1;
+
+          // Draw the selected overlay image
+          const overlayImg = new Image();
+          overlayImg.onload = () => {
+            // Fill the canvas with the selected color
+
+            ctx.drawImage(overlayImg, 0, 0, width, height);
+
+            // Draw the user-uploaded image at the specified position if it exists
+            if (userImage) {
+              const userImg = new Image();
+              userImg.onload = () => {
+                const imgHeight = 100 * 2.5;
+                const aspectRatio = userImg.width / userImg.height;
+                const imgWidth = imgHeight * aspectRatio;
+                console.log(imgWidth, imgHeight, aspectRatio);
+                var widthOffSetForDownload = 0;
+                if (imgWidth < imgHeight) {
+                  widthOffSetForDownload += imgHeight - imgWidth;
+                  widthOffSetForDownload /= 2;
+                } else {
+                  widthOffSetForDownload -= imgWidth - imgHeight;
+                  widthOffSetForDownload /= 2;
+                }
+                ctx.drawImage(
+                  userImg,
+                  userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
+                  userImagePosition.y * 2.5 + imgHeight + 1100,
+                  imgWidth,
+                  imgHeight
+                );
+
+                // Draw Text on screen
+                drawText(ctx);
+
+                // Download Final Photo
+                downloadFinalImageLink(canvas);
+              };
+              userImg.src = userImage;
             } else {
-              widthOffSetForDownload -= imgWidth - imgHeight;
-              widthOffSetForDownload /= 2;
+              // If no userImage is defined, continue with drawing text and downloading
+              // Draw Text on screen
+              drawText(ctx);
+
+              // Download Final Photo
+              downloadFinalImageLink(canvas);
             }
-            ctx.drawImage(
-              userImg,
-              userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
-              userImagePosition.y * 2.5 + imgHeight + 1100,
-              imgWidth,
-              imgHeight
-            );
+          };
+          overlayImg.src = backdropImage;
+        };
+        wallpaperImg.src = wallpaperImage;
+      } else {
+        // If no wallpaperImage is defined, continue with drawing the overlay image
+        const overlayImg = new Image();
+        overlayImg.onload = () => {
+          // Fill the canvas with the selected color
+          ctx.fillStyle = canvasColor;
+          ctx.fillRect(0, 0, width, height);
 
-            /////////////////////////
-            // Draw Text on screen //
-            /////////////////////////
+          ctx.drawImage(overlayImg, 0, 0, width, height);
 
+          // Draw the user-uploaded image at the specified position if it exists
+          if (userImage) {
+            const userImg = new Image();
+            userImg.onload = () => {
+              const imgHeight = 100 * 2.5;
+              const aspectRatio = userImg.width / userImg.height;
+              const imgWidth = imgHeight * aspectRatio;
+              console.log(imgWidth, imgHeight, aspectRatio);
+              var widthOffSetForDownload = 0;
+              if (imgWidth < imgHeight) {
+                widthOffSetForDownload += imgHeight - imgWidth;
+                widthOffSetForDownload /= 2;
+              } else {
+                widthOffSetForDownload -= imgWidth - imgHeight;
+                widthOffSetForDownload /= 2;
+              }
+              ctx.drawImage(
+                userImg,
+                userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
+                userImagePosition.y * 2.5 + imgHeight + 1100,
+                imgWidth,
+                imgHeight
+              );
+
+              // Draw Text on screen
+              drawText(ctx);
+
+              // Download Final Photo
+              downloadFinalImageLink(canvas);
+            };
+            userImg.src = userImage;
+          } else {
+            // If no userImage is defined, continue with drawing text and downloading
+            // Draw Text on screen
             drawText(ctx);
 
-            /////////////////////////
-            // Download Final Photo //
-            /////////////////////////
-
+            // Download Final Photo
             downloadFinalImageLink(canvas);
-          };
-          userImg.src = userImage;
-        } else {
-          /////////////////////////
-          // Draw Text on screen //
-          /////////////////////////
-
-          drawText(ctx);
-
-          /////////////////////////
-          // Download Photo //
-          /////////////////////////
-
-          downloadFinalImageLink(canvas);
-        }
-      };
-      overlayImg.src = backdropImage;
+          }
+        };
+        overlayImg.src = backdropImage;
+      }
     }
   }
 
@@ -278,7 +338,7 @@ function App() {
     <div className="app">
       <h1>Photobooth Layout Maker</h1>
       <div className="workshop">
-        <div className="editingTools">
+        <div className="editingToolsLeft">
           <h3>Choose a backdrop</h3>
           <select
             onChange={(e) => setBackdropImage(e.target.value)}
@@ -354,16 +414,6 @@ function App() {
               ))}
             </select>
           </div>
-          <h3>Add your own photo</h3>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            ref={fileInputRef}
-          />
-          <button onClick={handleDeleteImage}>Delete</button>
-          <h3>Done</h3>
-          <button onClick={() => downloadImage()}>Download Image</button>
         </div>
         <LayoutImage
           canvasColor={canvasColor}
@@ -381,6 +431,20 @@ function App() {
           textShadowColor={textShadowColor}
           wallpaperImage={wallpaperImage}
         />
+        <div className="editingToolsRight">
+          <h3>Add your own photo</h3>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            ref={fileInputRef}
+          />
+          <button id="deleteButton" onClick={handleDeleteImage}>
+            Delete
+          </button>
+          <h3>Done</h3>
+          <button onClick={() => downloadImage()}>Download Image</button>
+        </div>
       </div>
     </div>
   );

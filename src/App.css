@@ -16,8 +16,18 @@
   align-items: flex-start;
 }
 
-.editingTools {
+.editingToolsLeft {
   display: flex;
   flex-direction: column;
   margin-right: 3rem;
+}
+
+.editingToolsRight {
+  display: flex;
+  flex-direction: column;
+  margin-left: 3rem;
+}
+
+#deleteButton {
+  margin-top: 1rem;
 }
