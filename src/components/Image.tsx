@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import "./image.css";
+import Square from "../components/Square";
 
 interface ImageProps {
   canvasColor: string;
@@ -24,6 +25,7 @@ interface ImageProps {
   addSecondaryTextShadow: boolean;
   secondaryTextShadowColor: string;
   secondaryTextColor: string;
+  borderColor: string;
 }
 
 const Image: React.FC<ImageProps> = ({
@@ -49,6 +51,7 @@ const Image: React.FC<ImageProps> = ({
   addSecondaryTextShadow,
   secondaryTextShadowColor,
   secondaryTextColor,
+  borderColor,
 }) => {
   const [textPosition, setTextPosition] = useState({ x: 0, y: 550 });
   const [textIsDragging, setTextIsDragging] = useState(false);
@@ -216,13 +219,20 @@ const Image: React.FC<ImageProps> = ({
           overflow: "hidden",
         }}
       >
+        <div>
+          <Square backgroundColor={borderColor} topPosition={27} />
+          <Square backgroundColor={borderColor} topPosition={144} />
+          <Square backgroundColor={borderColor} topPosition={260} />
+          <Square backgroundColor={borderColor} topPosition={377} />
+        </div>
         <img
           src={backdropImage}
           alt="Backdrop Image"
           style={{
             width: `${width}px`,
             height: `${height}px`,
-            zIndex: 3,
+            zIndex: 5,
+            position: "absolute",
           }}
           draggable="false"
         ></img>

@@ -2,66 +2,95 @@ import React, { useState, useRef } from "react";
 import LayoutImage from "./components/Image";
 import ColorPicker from "./components/ColorPicker";
 import "./App.css";
-import BlackBackDrop from "./assets/backdropChoices/black.png";
-import GoldBackDrop from "./assets/backdropChoices/gold.png";
-import GreenBackDrop from "./assets/backdropChoices/green.png";
-import SilverBackDrop from "./assets/backdropChoices/silver.png";
-import WhiteBackDrop from "./assets/backdropChoices/white.png";
-import BrownGlitterBackDrop from "./assets/backdropChoices/brownGlitter.png";
-import Pattern1 from "./assets/backgroundPreselected/pattern1.png";
-import Pattern2 from "./assets/backgroundPreselected/pattern2.png";
-import Pattern3 from "./assets/backgroundPreselected/pattern3.png";
-import Pattern4 from "./assets/backgroundPreselected/pattern4.png";
-import Pattern5 from "./assets/backgroundPreselected/pattern5.png";
-import Pattern6 from "./assets/backgroundPreselected/pattern6.png";
-import Pattern7 from "./assets/backgroundPreselected/pattern7.png";
+import {
+  BlackBackDrop,
+  GoldBackDrop,
+  GreenBackDrop,
+  SilverBackDrop,
+  WhiteBackDrop,
+  BrownGlitterBackDrop,
+  Pattern1,
+  Pattern2,
+  Pattern3,
+  Pattern4,
+  Pattern5,
+  Pattern6,
+  Pattern7,
+} from "./config/imagePaths";
 
 function App() {
+  // Canvas Variables //
   const [width, setWidth] = useState(546);
   const [height, setHeight] = useState(1600);
   const [canvasColor, setCanvasColor] = useState("#1E90FF");
+  // //
+
+  // Main Text Variables //
   const [mainText, setMainText] = useState<string>("Jade and West Wedding"); // Default text
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
+  const [mainTextColor, setMainTextColor] = useState("#000000");
+  const [mainTextYPosition, setMainTextYPosition] = useState<number>(550); // Default text position
+  const [addTextShadow, setAddTextShadow] = useState(false);
+  const [textShadowColor, setTextShadowColor] = useState("#000000");
+  // //
 
+  // Secondary Text Variables //
+  const [secondaryText, setSecondaryText] = useState("October 5th, 2023");
+  const [wantSecondaryText, setWantSecondaryText] = useState(false);
   const [secondaryFontSize, setSecondaryFontSize] = useState<number>(38);
   const [secondaryFontFamily, setSecondaryFontFamily] =
     useState<string>("Playfair Display");
-
   const [secondaryTextColor, setSecondaryTextColor] =
     useState<string>("#000000");
+  const [secondaryTextYPosition, setSecondaryTextYPosition] = useState(600);
+  const [addSecondaryTextShadow, setAddSecondaryTextShadow] = useState(false);
+  const [secondaryTextShadowColor, setSecondaryTextShadowColor] =
+    useState("#000000");
 
-  const [mainTextYPosition, setMainTextYPosition] = useState<number>(550); // Default text position
+  // //
+
+  // All text settings //
+  const fontSizes = ["32px", "38px", "44px", "60px"];
+  const fontFamilies = [
+    "Caveat",
+    "Croissant One",
+    "Dancing Script",
+    "Inter",
+    "Lato",
+    "Playfair Display",
+  ];
+  // //
+
+  // User Uploaded Image Variables //
   const [userImagePosition, setUserImagePosition] = useState<{
     x: number;
     y: number;
   }>({ x: 0, y: 0 });
+  const [userImage, setUserImage] = useState<string | null>(null);
+
+  // //
+
+  // BackDrop And Wallpaper Variables //
+
+  const [borderColor, setBorderColor] = useState("white");
 
   const [backdropImage, setBackdropImage] = useState<string>(BlackBackDrop);
   const backdropOptions = [
-    BlackBackDrop, // Default image
+    BlackBackDrop,
     GoldBackDrop,
     GreenBackDrop,
     SilverBackDrop,
     WhiteBackDrop,
     BrownGlitterBackDrop,
   ];
-
-  const backdropLabels = [
-    "Black", // Label for the default image
-    "Gold",
-    "Green",
-    "Silver",
-    "White",
-    "Brown",
-    // Add labels for other image options
-  ];
+  const backdropLabels = ["Black", "Gold", "Green", "Silver", "White", "Brown"];
 
   const [wallpaperImage, setWallpaperImage] = useState<string | undefined>(
     undefined
   );
   const wallpaperOptions = [
-    "", // Default image
+    "",
     Pattern1,
     Pattern2,
     Pattern3,
@@ -73,16 +102,18 @@ function App() {
 
   const wallpaperLabels = [
     "None",
-    "rainbow glass", // Default image
-    "black glass",
-    "colorful squares",
-    "white roses",
-    "flowers",
-    "cubes",
-    "blue floral",
+    "Rainbow Glass",
+    "Black Glass",
+    "Colorful Squares",
+    "White Roses",
+    "Flowers",
+    "Cubes",
+    "Blue Floral",
   ];
 
-  const [userImage, setUserImage] = useState<string | null>(null);
+  // //
+
+  // User Image Functions & Variables //
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,16 +129,6 @@ function App() {
     }
   };
 
-  const updateMainTextYPosition = (updatedValue: number) => {
-    setMainTextYPosition(updatedValue);
-  };
-
-  const [secondaryTextYPosition, setSecondaryTextYPosition] = useState(600);
-
-  const updateSecondaryTextYPosition = (updatedValue: number) => {
-    setSecondaryTextYPosition(updatedValue);
-  };
-
   const updateUserImagePosition = (updatedValue: { x: number; y: number }) => {
     setUserImagePosition(updatedValue);
   };
@@ -119,34 +140,27 @@ function App() {
     }
   };
 
-  const fontSizes = ["32px", "38px", "44px", "60px"];
-  const fontFamilies = [
-    "Caveat",
-    "Croissant One",
-    "Dancing Script",
-    "Inter",
-    "Lato",
-    "Playfair Display",
-  ];
+  // //
 
-  const [addTextShadow, setAddTextShadow] = useState(false);
-  const [textShadowColor, setTextShadowColor] = useState("#000000");
+  const updateMainTextYPosition = (updatedValue: number) => {
+    setMainTextYPosition(updatedValue);
+  };
 
-  const [addSecondaryTextShadow, setAddSecondaryTextShadow] = useState(false);
-  const [secondaryTextShadowColor, setSecondaryTextShadowColor] =
-    useState("#000000");
+  const updateSecondaryTextYPosition = (updatedValue: number) => {
+    setSecondaryTextYPosition(updatedValue);
+  };
 
   const handleTextShadowColorChange = (newColor: string) => {
     setTextShadowColor(newColor);
   };
 
+  const handleBorderColorChange = (newColor: string) => {
+    setBorderColor(newColor);
+  };
+
   const handleSecondaryTextShadowColorChange = (newColor: string) => {
     setSecondaryTextShadowColor(newColor);
   };
-
-  const [secondaryText, setSecondaryText] = useState("October 5th, 2023");
-
-  const [wantSecondaryText, setWantSecondaryText] = useState(false);
 
   const handleAddSecondaryText = () => {
     setWantSecondaryText(true);
@@ -158,236 +172,9 @@ function App() {
     setSecondaryText(event.target.value);
   };
 
-  function getLines(
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    maxWidth: number
-  ) {
-    var words = text.split(" ");
-    var lines = [];
-    var currentLine = words[0];
-
-    for (var i = 1; i < words.length; i++) {
-      var word = words[i];
-      var thisWidth = ctx.measureText(currentLine + " " + word).width;
-      if (thisWidth < maxWidth) {
-        currentLine += " " + word;
-      } else {
-        lines.push(currentLine);
-        currentLine = word;
-      }
-    }
-    lines.push(currentLine);
-    return lines;
-  }
-
-  function drawText(ctx: CanvasRenderingContext2D) {
-    // Draw text on the canvas
-    ctx.fillStyle = mainTextColor;
-    ctx.font = `${fontSize + 6}px ${fontFamily}`;
-    ctx.textAlign = "center";
-    const textLines = getLines(ctx, mainText, width);
-    if (addTextShadow) {
-      ctx.shadowColor = textShadowColor;
-      ctx.shadowBlur = 2 * 2.5;
-      ctx.shadowOffsetY = 2 * 2.5;
-      ctx.shadowOffsetX = 2 * 2.5;
-    }
-    for (let i = 0; i < textLines.length; i++) {
-      const line = textLines[i];
-      const lineHeight = 1.5 * fontSize;
-      ctx.fillText(
-        line,
-        width / 2,
-        mainTextYPosition * 2.5 + 50 + i * lineHeight
-      );
-    }
-  }
-
-  function drawSecondaryText(ctx: CanvasRenderingContext2D) {
-    console.log("drawing the secondary text");
-    // Draw text on the canvas
-    ctx.fillStyle = secondaryTextColor;
-    ctx.font = `${secondaryFontSize + 6}px ${secondaryFontFamily}`;
-    ctx.textAlign = "center";
-    const textLines = getLines(ctx, secondaryText, width);
-    if (addSecondaryTextShadow) {
-      ctx.shadowColor = secondaryTextShadowColor;
-      ctx.shadowBlur = 2 * 2.5;
-      ctx.shadowOffsetY = 2 * 2.5;
-      ctx.shadowOffsetX = 2 * 2.5;
-    }
-    for (let i = 0; i < textLines.length; i++) {
-      const line = textLines[i];
-      const lineHeight = 1.5 * secondaryFontSize;
-      ctx.fillText(
-        line,
-        width / 2,
-        secondaryTextYPosition * 2.5 + 50 + i * lineHeight
-      );
-    }
-  }
-
-  function downloadFinalImageLink(canvas: HTMLCanvasElement) {
-    // Create a download link for the canvas image
-    const url = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "custom-image.png";
-    link.click();
-  }
-
-  function downloadImage() {
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
-
-    if (ctx) {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.globalAlpha = 0.75;
-      // Draw the wallpaperImage if it is defined
-      if (wallpaperImage) {
-        const wallpaperImg = new Image();
-        wallpaperImg.onload = () => {
-          ctx.drawImage(
-            wallpaperImg,
-            // Adjust the coordinates and size as needed
-            0,
-            0,
-            width,
-            height
-          );
-
-          ctx.globalAlpha = 1;
-
-          // 4 square photos //
-          // Draw the selected overlay image
-          const overlayImg = new Image();
-          overlayImg.onload = () => {
-            // Fill the canvas with the selected color
-
-            ctx.drawImage(overlayImg, 0, 0, width, height);
-
-            // Draw the user-uploaded image at the specified position if it exists
-            if (userImage) {
-              const userImg = new Image();
-              userImg.onload = () => {
-                const imgHeight = 100 * 2.5;
-                const aspectRatio = userImg.width / userImg.height;
-                const imgWidth = imgHeight * aspectRatio;
-                console.log(imgWidth, imgHeight, aspectRatio);
-                var widthOffSetForDownload = 0;
-                if (imgWidth < imgHeight) {
-                  widthOffSetForDownload += imgHeight - imgWidth;
-                  widthOffSetForDownload /= 2;
-                } else {
-                  widthOffSetForDownload -= imgWidth - imgHeight;
-                  widthOffSetForDownload /= 2;
-                }
-                ctx.drawImage(
-                  userImg,
-                  userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
-                  userImagePosition.y * 2.5 + imgHeight + 1100,
-                  imgWidth,
-                  imgHeight
-                );
-
-                // Draw Text on screen
-                drawText(ctx);
-                if (wantSecondaryText) {
-                  drawSecondaryText(ctx);
-                }
-
-                // Download Final Photo
-                downloadFinalImageLink(canvas);
-              };
-              userImg.src = userImage;
-            } else {
-              // If no userImage is defined, continue with drawing text and downloading
-              // Draw Text on screen
-              drawText(ctx);
-
-              if (wantSecondaryText) {
-                drawSecondaryText(ctx);
-              }
-
-              // Download Final Photo
-              downloadFinalImageLink(canvas);
-            }
-          };
-          overlayImg.src = backdropImage;
-        };
-        wallpaperImg.src = wallpaperImage;
-      } else {
-        ctx.globalAlpha = 1;
-        // If no wallpaperImage is defined, continue with drawing the overlay image
-        const overlayImg = new Image();
-        overlayImg.onload = () => {
-          // Fill the canvas with the selected color
-          ctx.fillStyle = canvasColor;
-          ctx.fillRect(0, 0, width, height);
-
-          ctx.drawImage(overlayImg, 0, 0, width, height);
-
-          // Draw the user-uploaded image at the specified position if it exists
-          if (userImage) {
-            const userImg = new Image();
-            userImg.onload = () => {
-              const imgHeight = 100 * 2.5;
-              const aspectRatio = userImg.width / userImg.height;
-              const imgWidth = imgHeight * aspectRatio;
-              console.log(imgWidth, imgHeight, aspectRatio);
-              var widthOffSetForDownload = 0;
-              if (imgWidth < imgHeight) {
-                widthOffSetForDownload += imgHeight - imgWidth;
-                widthOffSetForDownload /= 2;
-              } else {
-                widthOffSetForDownload -= imgWidth - imgHeight;
-                widthOffSetForDownload /= 2;
-              }
-              ctx.drawImage(
-                userImg,
-                userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
-                userImagePosition.y * 2.5 + imgHeight + 1100,
-                imgWidth,
-                imgHeight
-              );
-
-              // Draw Text on screen
-              drawText(ctx);
-              if (wantSecondaryText) {
-                drawSecondaryText(ctx);
-              }
-
-              // Download Final Photo
-              downloadFinalImageLink(canvas);
-            };
-            userImg.src = userImage;
-          } else {
-            // If no userImage is defined, continue with drawing text and downloading
-            // Draw Text on screen
-            drawText(ctx);
-            if (wantSecondaryText) {
-              drawSecondaryText(ctx);
-            }
-
-            // Download Final Photo
-            downloadFinalImageLink(canvas);
-          }
-        };
-        overlayImg.src = backdropImage;
-      }
-    }
-  }
-
   const handleColorChange = (newColor: string) => {
     setCanvasColor(newColor);
   };
-
-  const [mainTextColor, setMainTextColor] = useState("#000000");
 
   const handleMainTextColorChange = (newColor: string) => {
     setMainTextColor(newColor);
@@ -438,13 +225,6 @@ function App() {
     secondaryText: false,
   });
 
-  // const toggleSection = (section: keyof SectionVisibility) => {
-  //   setSectionsVisible({
-  //     ...sectionsVisible,
-  //     [section]: !sectionsVisible[section],
-  //   });
-  // };
-
   const toggleSection = (section: keyof SectionVisibility) => {
     setSectionsVisible((prevVisibility) => {
       const updatedVisibility: SectionVisibility = {
@@ -466,6 +246,243 @@ function App() {
   const handleDeleteSecondaryText = () => {
     setWantSecondaryText(false);
   };
+
+  // Canvas Image Downloading //
+
+  function getLines(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    maxWidth: number
+  ) {
+    var words = text.split(" ");
+    var lines = [];
+    var currentLine = words[0];
+
+    for (var i = 1; i < words.length; i++) {
+      var word = words[i];
+      var thisWidth = ctx.measureText(currentLine + " " + word).width;
+      if (thisWidth < maxWidth) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  }
+
+  function drawText(ctx: CanvasRenderingContext2D) {
+    // Draw text on the canvas
+    ctx.fillStyle = mainTextColor;
+    ctx.font = `${fontSize + 6}px ${fontFamily}`;
+    ctx.textAlign = "center";
+    const textLines = getLines(ctx, mainText, width);
+    if (addTextShadow) {
+      ctx.shadowColor = textShadowColor;
+      ctx.shadowBlur = 2 * 2.5;
+      ctx.shadowOffsetY = 2 * 2.5;
+      ctx.shadowOffsetX = 2 * 2.5;
+    }
+    for (let i = 0; i < textLines.length; i++) {
+      const line = textLines[i];
+      const lineHeight = 1.5 * fontSize;
+      ctx.fillText(
+        line,
+        width / 2,
+        mainTextYPosition * 2.5 + 50 + i * lineHeight
+      );
+    }
+  }
+
+  function drawUsersOwnImage(
+    userImg: HTMLImageElement,
+    ctx: CanvasRenderingContext2D
+  ) {
+    const imgHeight = 100 * 2.5;
+    const aspectRatio = userImg.width / userImg.height;
+    const imgWidth = imgHeight * aspectRatio;
+    console.log(imgWidth, imgHeight, aspectRatio);
+    var widthOffSetForDownload = 0;
+    if (imgWidth < imgHeight) {
+      widthOffSetForDownload += imgHeight - imgWidth;
+      widthOffSetForDownload /= 2;
+    } else {
+      widthOffSetForDownload -= imgWidth - imgHeight;
+      widthOffSetForDownload /= 2;
+    }
+    ctx.drawImage(
+      userImg,
+      userImagePosition.x * 2.5 + 150 + widthOffSetForDownload,
+      userImagePosition.y * 2.5 + imgHeight + 1100,
+      imgWidth,
+      imgHeight
+    );
+  }
+
+  function drawSecondaryText(ctx: CanvasRenderingContext2D) {
+    console.log("drawing the secondary text");
+    // Draw text on the canvas
+    ctx.fillStyle = secondaryTextColor;
+    ctx.font = `${secondaryFontSize + 6}px ${secondaryFontFamily}`;
+    ctx.textAlign = "center";
+    const textLines = getLines(ctx, secondaryText, width);
+    if (addSecondaryTextShadow) {
+      ctx.shadowColor = secondaryTextShadowColor;
+      ctx.shadowBlur = 2 * 2.5;
+      ctx.shadowOffsetY = 2 * 2.5;
+      ctx.shadowOffsetX = 2 * 2.5;
+    }
+    for (let i = 0; i < textLines.length; i++) {
+      const line = textLines[i];
+      const lineHeight = 1.5 * secondaryFontSize;
+      ctx.fillText(
+        line,
+        width / 2,
+        secondaryTextYPosition * 2.5 + 50 + i * lineHeight
+      );
+    }
+  }
+
+  function downloadFinalImageLink(canvas: HTMLCanvasElement) {
+    // Create a download link for the canvas image
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "custom-image.png";
+    link.click();
+  }
+
+  function drawBorderSquares(
+    ctx: CanvasRenderingContext2D,
+    borderColor: string
+  ) {
+    ctx.fillStyle = borderColor;
+    ctx.fillRect(31, 27 * 2.5, 192 * 2.5, 111 * 2.5);
+    ctx.fillRect(31, 144 * 2.5, 192 * 2.5, 111 * 2.5);
+    ctx.fillRect(31, 260 * 2.5, 192 * 2.5, 111 * 2.5);
+    ctx.fillRect(31, 377 * 2.5, 192 * 2.5, 111 * 2.5);
+  }
+
+  function downloadImage() {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.globalAlpha = 0.75;
+      // Draw the wallpaperImage if it is defined
+      if (wallpaperImage) {
+        const wallpaperImg = new Image();
+        wallpaperImg.onload = () => {
+          ctx.drawImage(
+            wallpaperImg,
+            // Adjust the coordinates and size as needed
+            0,
+            0,
+            width,
+            height
+          );
+
+          ctx.globalAlpha = 1;
+
+          // 4 square photos //
+          // Draw the selected overlay image
+          const overlayImg = new Image();
+          overlayImg.onload = () => {
+            // Fill the canvas with the selected color
+
+            // Draw Border Squares //
+            drawBorderSquares(ctx, borderColor);
+            // //
+
+            ctx.drawImage(overlayImg, 0, 0, width, height);
+
+            // Draw the user-uploaded image at the specified position if it exists
+            if (userImage) {
+              const userImg = new Image();
+              userImg.onload = () => {
+                drawUsersOwnImage(userImg, ctx);
+
+                // Draw Text on screen
+                drawText(ctx);
+                if (wantSecondaryText) {
+                  drawSecondaryText(ctx);
+                }
+
+                // Download Final Photo
+                downloadFinalImageLink(canvas);
+              };
+              userImg.src = userImage;
+            } else {
+              // If no userImage is defined, continue with drawing text and downloading
+              // Draw Text on screen
+              drawText(ctx);
+
+              if (wantSecondaryText) {
+                drawSecondaryText(ctx);
+              }
+
+              // Download Final Photo
+              downloadFinalImageLink(canvas);
+            }
+          };
+          overlayImg.src = backdropImage;
+        };
+        wallpaperImg.src = wallpaperImage;
+      } else {
+        ctx.globalAlpha = 1;
+        // If no wallpaperImage is defined, continue with drawing the overlay image
+        const overlayImg = new Image();
+        overlayImg.onload = () => {
+          // Fill the canvas with the selected color
+          ctx.fillStyle = canvasColor;
+          ctx.fillRect(0, 0, width, height);
+
+          // Draw Border Squares //
+          drawBorderSquares(ctx, borderColor);
+          // //
+
+          ctx.drawImage(overlayImg, 0, 0, width, height);
+
+          // Draw the user-uploaded image at the specified position if it exists
+          if (userImage) {
+            const userImg = new Image();
+            userImg.onload = () => {
+              drawUsersOwnImage(userImg, ctx);
+
+              // Draw Text on screen
+              drawText(ctx);
+              if (wantSecondaryText) {
+                drawSecondaryText(ctx);
+              }
+
+              // Download Final Photo
+              downloadFinalImageLink(canvas);
+            };
+            userImg.src = userImage;
+          } else {
+            // If no userImage is defined, continue with drawing text and downloading
+            // Draw Text on screen
+            drawText(ctx);
+            if (wantSecondaryText) {
+              drawSecondaryText(ctx);
+            }
+
+            // Download Final Photo
+            downloadFinalImageLink(canvas);
+          }
+        };
+        overlayImg.src = backdropImage;
+      }
+    }
+  }
+
+  //
 
   return (
     <div className="app">
@@ -512,6 +529,13 @@ function App() {
             <div className="flexRow">
               <h3>Solid Background color</h3>
               <ColorPicker onChange={handleColorChange} color={canvasColor} />
+            </div>
+            <div className="flexRow">
+              <h3>Border color</h3>
+              <ColorPicker
+                onChange={handleBorderColorChange}
+                color={borderColor}
+              />
             </div>
           </div>
           <h2
@@ -701,6 +725,7 @@ function App() {
           addSecondaryTextShadow={addSecondaryTextShadow}
           secondaryTextShadowColor={secondaryTextShadowColor}
           secondaryTextColor={secondaryTextColor}
+          borderColor={borderColor}
         />
         <div className="editingToolsRight">
           <h3>Add your own photo</h3>
