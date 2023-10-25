@@ -17,22 +17,23 @@ import {
   Pattern6,
   Pattern7,
 } from "./config/imagePaths";
+import Backdesign from "./components/Backdesign";
 
 function App() {
   // Canvas Variables //
-  const [width, setWidth] = useState(546);
-  const [height, setHeight] = useState(1600);
-  const [canvasColor, setCanvasColor] = useState("#1E90FF");
+  const [width, setWidth] = useState(546); // Printout width
+  const [height, setHeight] = useState(1600); // Printout height
+  const [canvasColor, setCanvasColor] = useState("#1E90FF"); // Printout default background color
   // //
 
   // Main Text Variables //
   const [mainText, setMainText] = useState<string>("Jade and West Wedding"); // Default text
   const [fontSize, setFontSize] = useState<number>(44); // Default font size
   const [fontFamily, setFontFamily] = useState<string>("Playfair Display"); // Default font family
-  const [mainTextColor, setMainTextColor] = useState("#000000");
+  const [mainTextColor, setMainTextColor] = useState("#000000"); // default text color
   const [mainTextYPosition, setMainTextYPosition] = useState<number>(550); // Default text position
-  const [addTextShadow, setAddTextShadow] = useState(false);
-  const [textShadowColor, setTextShadowColor] = useState("#000000");
+  const [addTextShadow, setAddTextShadow] = useState(false); // default add text shadow
+  const [textShadowColor, setTextShadowColor] = useState("#000000"); // default shadow color
   // //
 
   // Secondary Text Variables //
@@ -221,23 +222,18 @@ function App() {
 
   const [sectionsVisible, setSectionsVisible] = useState<SectionVisibility>({
     backdesign: false,
-    mainText: true,
+    mainText: false,
     secondaryText: false,
   });
 
-  const toggleSection = (section: keyof SectionVisibility) => {
-    setSectionsVisible((prevVisibility) => {
-      const updatedVisibility: SectionVisibility = {
-        backdesign: false,
-        mainText: true,
-        secondaryText: false,
-      };
+  const [isFlipped, setIsFlipped] = useState(false);
 
-      for (const key in prevVisibility) {
-        if (Object.prototype.hasOwnProperty.call(prevVisibility, key)) {
-          updatedVisibility[key] = key === section ? true : false;
-        }
-      }
+  const toggleSection = (section: keyof SectionVisibility) => {
+    setIsFlipped(!isFlipped);
+    setSectionsVisible((prevVisibility) => {
+      const updatedVisibility: SectionVisibility = { ...prevVisibility }; // Create a copy of the previous state
+
+      updatedVisibility[section] = !prevVisibility[section]; // Toggle the section's visibility
 
       return updatedVisibility;
     });
@@ -486,260 +482,298 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Photobooth Layout Maker</h1>
-      <div className="workshop">
-        <div className="editingToolsLeft">
-          <h2
-            className="optionsTitle"
-            onClick={() => toggleSection("backdesign")}
-          >
-            Open BackDesign Options
-          </h2>
-          <div
-            className={`tool-section ${
-              !sectionsVisible.backdesign ? "hidden" : ""
-            }`}
-          >
-            <div className="flexRow">
-              <h3 onClick={() => toggleSection("backdesign")}>Backdrop</h3>
-              <select
-                onChange={(e) => setBackdropImage(e.target.value)}
-                value={backdropImage}
-              >
-                {backdropOptions.map((option, index) => (
-                  <option key={index} value={option}>
-                    {backdropLabels[index]}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flexRow">
-              <h3>Wallpaper</h3>
-              <select
-                onChange={(e) => setWallpaperImage(e.target.value)}
-                value={wallpaperImage}
-              >
-                {wallpaperOptions.map((option, index) => (
-                  <option key={index} value={option}>
-                    {wallpaperLabels[index]}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flexRow">
-              <h3>Solid Background color</h3>
-              <ColorPicker onChange={handleColorChange} color={canvasColor} />
-            </div>
-            <div className="flexRow">
-              <h3>Border color</h3>
-              <ColorPicker
-                onChange={handleBorderColorChange}
-                color={borderColor}
-              />
-            </div>
+      <div id="titleCard">
+        <div id="titleCardContents">
+          <div className="nameAndLogo">
+            <span
+              className="iconify optionsIcon smilie"
+              data-icon="solar:emoji-funny-square-linear"
+            ></span>
+            <h1 id="appTitle">Photobooth Layout Maker</h1>
           </div>
-          <h2
-            className="optionsTitle"
-            onClick={() => toggleSection("mainText")}
-          >
-            Open Main Text Options
-          </h2>
-          <div
-            className={`tool-section ${
-              !sectionsVisible.mainText ? "hidden" : ""
-            }`}
-          >
-            <div className="flexRow">
-              <h3>Main text</h3>
-              <input
-                type="text"
-                value={mainText}
-                onChange={handleTextChange}
-                placeholder="Enter text here"
-              />
-            </div>
-            <div className="flexRow">
-              <h3 onClick={() => toggleSection("mainText")}>
-                Change text color
-              </h3>
-              <ColorPicker
-                onChange={handleMainTextColorChange}
-                color={mainTextColor}
-              />
-            </div>
-            <div className="flexRow">
-              <p>Shadows</p>
-              <input
-                type="checkbox"
-                checked={addTextShadow}
-                onChange={() => setAddTextShadow(!addTextShadow)}
-              />
-            </div>
-            <div className="flexRow">
-              <h3>Text Effects Color</h3>
-              <ColorPicker
-                onChange={handleTextShadowColorChange}
-                color={textShadowColor}
-              />
-            </div>
-            <div className="flexRow">
-              <h3>Text size</h3>
-              <div>
+          <div className="editedBy">
+            <p>Created by</p>
+            <h1>Sergio Hernandez</h1>
+          </div>
+        </div>
+      </div>
+      <div className="mainWindow">
+        <div className="workshop">
+          <div className="editingToolsLeft">
+            <h2
+              className="optionsTitle"
+              onClick={() => toggleSection("mainText")}
+            >
+              <span
+                className="iconify optionsIcon"
+                data-icon="basil:edit-outline"
+              ></span>
+              <span className="goldText">Primary Text</span>
+              <span
+                className={`carot ${
+                  sectionsVisible["mainText"] ? "flipped" : ""
+                }`}
+              ></span>
+            </h2>
+            <div
+              className={`tool-section ${
+                !sectionsVisible.mainText ? "hidden" : ""
+              }`}
+            >
+              <div className="flexRow">
+                <h3>Text</h3>
+                <input
+                  className="textBox"
+                  type="text"
+                  value={mainText}
+                  onChange={handleTextChange}
+                  placeholder="Enter text here"
+                />
+              </div>
+              <div className="flexRow">
+                <h3 onClick={() => toggleSection("mainText")}>
+                  Change Text Color
+                </h3>
+                <ColorPicker
+                  onChange={handleMainTextColorChange}
+                  color={mainTextColor}
+                />
+              </div>
+              <div className="flexRow">
+                <h3>Shadows</h3>
+                <input
+                  type="checkbox"
+                  checked={addTextShadow}
+                  onChange={() => setAddTextShadow(!addTextShadow)}
+                />
+              </div>
+              <div className="flexRow">
+                <h3>Text Effects Color</h3>
+                <ColorPicker
+                  onChange={handleTextShadowColorChange}
+                  color={textShadowColor}
+                />
+              </div>
+              <div className="flexRow">
+                <h3>Text Size</h3>
+                <div>
+                  <select
+                    className="selectBox"
+                    onChange={handleFontSizeChange}
+                    value={`${fontSize}px`}
+                  >
+                    {fontSizes.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flexRow">
+                <h3>Font Family</h3>
                 <select
-                  id="fontSize"
-                  onChange={handleFontSizeChange}
-                  value={`${fontSize}px`}
+                  className="selectBox"
+                  onChange={handleFontFamilyChange}
+                  value={fontFamily}
                 >
-                  {fontSizes.map((size) => (
-                    <option key={size} value={size}>
-                      {size}
+                  {fontFamilies.map((family) => (
+                    <option id="fontFamilyOption" key={family} value={family}>
+                      {family}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className="flexRow">
-              <h3>Font family</h3>
-              <select
-                id="fontFamily"
-                onChange={handleFontFamilyChange}
-                value={fontFamily}
-              >
-                {fontFamilies.map((family) => (
-                  <option key={family} value={family}>
-                    {family}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <h2
-            className="optionsTitle"
-            onClick={() => toggleSection("secondaryText")}
-          >
-            Open Secondary Text Options
-          </h2>
-          <div
-            className={`tool-section ${
-              !sectionsVisible.secondaryText ? "hidden" : ""
-            }`}
-          >
-            {!wantSecondaryText && (
-              <>
-                <h3>Add a tagline</h3>
-                <button id="addSecondaryText" onClick={handleAddSecondaryText}>
-                  Add Secondary Text
-                </button>
-              </>
-            )}
-            {wantSecondaryText && (
-              <>
-                <h3>Secondary Text</h3>
-                <input
-                  type="text"
-                  value={secondaryText}
-                  onChange={handleSecondaryTextChange}
-                  placeholder="Enter text here"
-                />
-                <button onClick={handleDeleteSecondaryText}>
-                  Delete secondary text
-                </button>
-                <div className="flexRow">
-                  <h3>Change text color</h3>
-                  <ColorPicker
-                    onChange={handleSecondaryTextColorChange}
-                    color={mainTextColor}
-                  />
-                </div>
-                <div className="flexRow">
-                  <p>Shadows</p>
-                  <input
-                    type="checkbox"
-                    checked={addSecondaryTextShadow}
-                    onChange={() =>
-                      setAddSecondaryTextShadow(!addSecondaryTextShadow)
-                    }
-                  />
-                </div>
-                <div className="flexRow">
-                  <h3>Text Effects Color</h3>
-                  <ColorPicker
-                    onChange={handleSecondaryTextShadowColorChange}
-                    color={secondaryTextShadowColor}
-                  />
-                </div>
-                <div className="flexRow">
-                  <h3>Text size</h3>
-                  <div>
-                    <select
-                      id="fontSize"
-                      onChange={handleSecondaryFontSizeChange}
-                      value={`${secondaryFontSize}px`}
+            <h2
+              className="optionsTitle"
+              onClick={() => toggleSection("secondaryText")}
+            >
+              <span
+                className="iconify optionsIcon"
+                data-icon="typcn:edit"
+              ></span>
+              <span className="goldText">Secondary Text</span>
+              <span
+                className={`carot ${
+                  sectionsVisible["secondaryText"] ? "flipped" : ""
+                }`}
+              ></span>
+            </h2>
+            <div
+              className={`tool-section ${
+                !sectionsVisible.secondaryText ? "hidden" : ""
+              }`}
+            >
+              {!wantSecondaryText && (
+                <>
+                  <button
+                    className="settingsButton"
+                    id="addSecondaryText"
+                    onClick={handleAddSecondaryText}
+                  >
+                    Add A Tagline
+                  </button>
+                </>
+              )}
+              {wantSecondaryText && (
+                <>
+                  <div id="textAndButton">
+                    <input
+                      className="textBox"
+                      type="text"
+                      value={secondaryText}
+                      onChange={handleSecondaryTextChange}
+                      placeholder="Enter text here"
+                    />
+                    <button
+                      className="settingsButton deleteButton"
+                      onClick={handleDeleteSecondaryText}
                     >
-                      {fontSizes.map((size) => (
-                        <option key={size} value={size}>
-                          {size}
+                      Delete Text
+                      <span
+                        className="iconify deleteIcon"
+                        data-icon="material-symbols:delete"
+                      ></span>
+                    </button>
+                  </div>
+                  <div className="flexRow">
+                    <h3>Change Text Color</h3>
+                    <ColorPicker
+                      onChange={handleSecondaryTextColorChange}
+                      color={mainTextColor}
+                    />
+                  </div>
+                  <div className="flexRow">
+                    <h3>Shadows</h3>
+                    <input
+                      type="checkbox"
+                      checked={addSecondaryTextShadow}
+                      onChange={() =>
+                        setAddSecondaryTextShadow(!addSecondaryTextShadow)
+                      }
+                    />
+                  </div>
+                  <div className="flexRow">
+                    <h3>Text Effects Color</h3>
+                    <ColorPicker
+                      onChange={handleSecondaryTextShadowColorChange}
+                      color={secondaryTextShadowColor}
+                    />
+                  </div>
+                  <div className="flexRow">
+                    <h3>Text Size</h3>
+                    <div>
+                      <select
+                        className="selectBox"
+                        onChange={handleSecondaryFontSizeChange}
+                        value={`${secondaryFontSize}px`}
+                      >
+                        {fontSizes.map((size) => (
+                          <option key={size} value={size}>
+                            {size}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flexRow">
+                    <h3>Font Family</h3>
+                    <select
+                      className="selectBox"
+                      onChange={handleSecondaryFontFamilyChange}
+                      value={secondaryFontFamily}
+                    >
+                      {fontFamilies.map((family) => (
+                        <option key={family} value={family}>
+                          {family}
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
-                <div className="flexRow">
-                  <h3>Font family</h3>
-                  <select
-                    id="fontFamily"
-                    onChange={handleSecondaryFontFamilyChange}
-                    value={secondaryFontFamily}
-                  >
-                    {fontFamilies.map((family) => (
-                      <option key={family} value={family}>
-                        {family}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        <LayoutImage
-          canvasColor={canvasColor}
-          mainTextColor={mainTextColor}
-          width={width / 2.5}
-          height={height / 2.5}
-          mainText={mainText}
-          fontSize={fontSize / 2.2}
-          fontFamily={fontFamily}
-          updateMainTextYPosition={updateMainTextYPosition}
-          updateUserImagePosition={updateUserImagePosition}
-          backdropImage={backdropImage}
-          userImage={userImage}
-          addTextShadow={addTextShadow}
-          textShadowColor={textShadowColor}
-          wallpaperImage={wallpaperImage}
-          wantSecondaryText={wantSecondaryText}
-          secondaryText={secondaryText}
-          updateSecondaryTextYPosition={updateSecondaryTextYPosition}
-          secondaryFontSize={secondaryFontSize / 2.2}
-          secondaryFontFamily={secondaryFontFamily}
-          addSecondaryTextShadow={addSecondaryTextShadow}
-          secondaryTextShadowColor={secondaryTextShadowColor}
-          secondaryTextColor={secondaryTextColor}
-          borderColor={borderColor}
-        />
-        <div className="editingToolsRight">
-          <h3>Add your own photo</h3>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            ref={fileInputRef}
+          <LayoutImage
+            canvasColor={canvasColor}
+            mainTextColor={mainTextColor}
+            width={width / 2.5}
+            height={height / 2.5}
+            mainText={mainText}
+            fontSize={fontSize / 2.2}
+            fontFamily={fontFamily}
+            updateMainTextYPosition={updateMainTextYPosition}
+            updateUserImagePosition={updateUserImagePosition}
+            backdropImage={backdropImage}
+            userImage={userImage}
+            addTextShadow={addTextShadow}
+            textShadowColor={textShadowColor}
+            wallpaperImage={wallpaperImage}
+            wantSecondaryText={wantSecondaryText}
+            secondaryText={secondaryText}
+            updateSecondaryTextYPosition={updateSecondaryTextYPosition}
+            secondaryFontSize={secondaryFontSize / 2.2}
+            secondaryFontFamily={secondaryFontFamily}
+            addSecondaryTextShadow={addSecondaryTextShadow}
+            secondaryTextShadowColor={secondaryTextShadowColor}
+            secondaryTextColor={secondaryTextColor}
+            borderColor={borderColor}
           />
-          <button id="deleteButton" onClick={handleDeleteImage}>
-            Delete
-          </button>
-          <h3>Done</h3>
-          <button onClick={() => downloadImage()}>Download Image</button>
+          <div className="editingToolsRight">
+            <h2
+              className="optionsTitle"
+              onClick={() => toggleSection("backdesign")}
+            >
+              <span
+                className="iconify optionsIcon"
+                data-icon="ri:image-fill"
+              ></span>
+              <span className="goldText">Image and Design</span>
+              <span
+                className={`carot ${
+                  sectionsVisible["backdesign"] ? "flipped" : ""
+                }`}
+              ></span>
+            </h2>
+            <Backdesign
+              sectionsVisible={sectionsVisible}
+              toggleSection={toggleSection}
+              setBackdropImage={setBackdropImage}
+              backdropImage={backdropImage}
+              backdropOptions={backdropOptions}
+              backdropLabels={backdropLabels}
+              setWallpaperImage={setWallpaperImage}
+              wallpaperImage={wallpaperImage}
+              wallpaperOptions={wallpaperOptions}
+              wallpaperLabels={wallpaperLabels}
+              handleColorChange={handleColorChange}
+              canvasColor={canvasColor}
+              handleBorderColorChange={handleBorderColorChange}
+              borderColor={borderColor}
+              handleImageUpload={handleImageUpload}
+              fileInputRef={fileInputRef}
+              userImage={userImage}
+              handleDeleteImage={handleDeleteImage}
+            />
+            <div className="downloadArea">
+              <span
+                className="iconify optionsIcon"
+                data-icon="fluent:save-image-20-filled"
+              ></span>
+              <span className="goldText">Download Image</span>
+              <button
+                className="settingsButton downloadButton"
+                onClick={() => downloadImage()}
+              >
+                <span
+                  className="iconify iconifySkills"
+                  data-icon="material-symbols:download"
+                ></span>
+                <span className="exportText">Export</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

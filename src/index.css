@@ -2,3 +2,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
+:root {
+  --main-color: black;
+  --accent-color: white;
+  --accent-color: rgb(0, 0, 18);
+  --off-white: rgb(220, 220, 220);
+  --hover-gray: rgb(34, 34, 34);
+}

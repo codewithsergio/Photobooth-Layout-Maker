@@ -3,42 +3,231 @@
   flex-direction: column;
   align-items: center;
   font-family: "Inter";
-  background-color: rgb(45, 45, 45);
+  background-color: var(--accent-color);
   padding: 0;
   margin: 0;
   height: 100vh;
+  color: var(--off-white);
+}
+
+#appTitle {
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+}
+
+#titleCardContents {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: auto;
+}
+
+#titleCard {
+  background-color: rgb(26, 26, 26);
+  width: 100%;
+  border-bottom: 1px solid rgb(79, 79, 79);
+  margin-bottom: 3rem;
+}
+
+.editedBy {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  margin-right: 3rem;
+}
+
+.editedBy > p {
+  font-size: 0.8rem;
+  color: gold;
+}
+
+.editedBy > h1 {
+  font-size: 1.5rem;
+  font-family: "East Sea Dokdo", sans-serif;
+}
+
+.editedBy > * {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+h3 {
+  font-weight: 400;
+}
+
+.selectBox {
+  width: 150px;
+  outline: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--hover-gray);
+  color: var(--off-white);
+}
+
+.settingsButton {
+  padding: 0.25rem;
+  border-radius: 0.2rem;
+  transition: all 0.1s ease-in-out;
+  outline: none;
+  border: none;
+  width: max-content;
+}
+
+.settingsButton:hover {
+  background-color: gray;
   color: white;
+  cursor: pointer;
+}
+
+.downloadButton {
+  margin: 0 auto 0 auto;
+  padding: 0.5rem 0.8rem 0.5rem 0.8rem;
+  background-color: var(--accent-color);
+  color: var(--off-white);
+  font-weight: bold;
+  border: 1px solid rgb(32, 32, 32);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.6rem;
+}
+
+.downloadButton:hover {
+  background-color: var(--hover-gray);
+  border-color: rgb(255, 217, 0, 0.4);
+}
+
+.downloadIcon {
+  margin-right: 3rem;
+}
+
+.iconify {
+  font-size: 1.5rem;
+}
+
+.deleteIcon {
+  font-size: 1.2rem;
+}
+
+.optionsIcon {
+  margin-right: 0.5rem;
+}
+
+#triangle {
+  float: right;
+}
+
+.textBox {
+  width: 150px;
+  outline: none;
+  border-radius: 0.25rem;
+  border: none;
+  padding: 0.4rem;
+  background-color: var(--hover-gray);
+  color: var(--off-white);
+}
+
+.nameAndLogo {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0 1rem 0;
+}
+
+.smilie {
+  font-size: 3rem;
+  margin-left: 1rem;
+  color: gold;
+}
+
+.carot {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent; /* Adjust the size as needed */
+  border-right: 8px solid transparent; /* Adjust the size as needed */
+  border-top: 8px solid var(--off-white); /* Adjust the color and size as needed */
+  margin: auto;
+  margin-right: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.flipped {
+  transform: rotate(180deg);
 }
 
 .workshop {
   display: flex;
-  align-items: flex-start;
+  height: 80vh;
+  justify-content: center;
+  background-color: var(--accent-color);
+  border-radius: 0.5rem;
+  border: 2px solid var(--hover-gray);
+}
+
+.downloadArea {
+  /* border: 1px solid var(--hover-gray); */
+  display: flex;
+  align-items: center;
+  border: 1px solid rgb(255, 217, 0, 0.4);
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 
 .editingToolsLeft {
   display: flex;
   flex-direction: column;
   margin-right: 3rem;
+  height: 100%;
+  background-color: var(--accent-color);
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 0 0 0 0.5rem;
 }
 
 .editingToolsRight {
   display: flex;
   flex-direction: column;
   margin-left: 3rem;
+  height: 100%;
+  background-color: var(--accent-color);
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 0 0 0.5rem 0;
 }
 
-#deleteButton {
-  margin-top: 1rem;
+#textAndButton {
+  display: flex;
+  justify-content: space-between;
+}
+
+.deleteButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3rem;
+  background-color: var(--accent-color);
+  border: 1px solid var(--hover-gray);
+  color: var(--off-white);
+}
+
+.deleteButton:hover {
+  color: var(--off-white);
+  background-color: rgb(29, 0, 0);
 }
 
 .tool-section {
   margin-bottom: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--hover-gray);
   padding: 10px;
-  background-color: rgb(45, 45, 45);
+  background-color: var(--accent-color);
   border-radius: 5px;
-  transition: max-height 0.3s ease-in-out;
-  overflow: hidden;
+  opacity: 1;
+  max-height: 600px;
+  transition: opacity ease-in-out 0.4s, max-height ease-in-out 0.4s;
 }
 
 .tool-section h2 {
@@ -46,22 +235,42 @@
 }
 
 .tool-section.hidden {
+  opacity: 0;
   max-height: 0;
-  padding: 0;
-  border: none;
-  margin: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: opacity ease-in-out 0.4s, max-height ease-in-out 0.4s;
 }
 
 .optionsTitle {
-  background-color: rgb(82, 82, 82);
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  background-color: var(--accent-color);
+  border: 1px solid var(--hover-gray);
   border-radius: 0.5rem;
   padding: 1rem;
-  transition: 0.2s all ease-in-out;
+  transition: all 0.2s ease-in-out;
+  width: 300px;
+}
+
+.exportText {
+  margin-bottom: 0;
+  margin-left: 0.5rem;
+  font-weight: 400;
+}
+
+.goldText {
+  margin-bottom: 0;
 }
 
 .optionsTitle:hover {
   cursor: pointer;
-  background-color: rgb(120, 120, 120);
+  background-color: var(--hover-gray);
+}
+
+h2.optionsTitle {
+  margin-bottom: 0.5rem;
 }
 
 .flexRow {
@@ -70,7 +279,21 @@
   align-items: center;
 }
 
+.flexRow2 {
+  padding-left: 0.5rem;
+}
+
+h4 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.goldText {
+  color: gold;
+}
+
 .flexRow > h3 {
+  font-size: 1rem;
   margin: 0.5rem;
   margin-right: 1rem;
 }

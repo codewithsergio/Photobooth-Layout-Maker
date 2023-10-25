@@ -18,7 +18,7 @@ const Square: React.FC<SquareProps> = ({ topPosition, backgroundColor }) => {
   const squareStyle: React.CSSProperties = {
     transform: `translate(-1px, 0px)`,
     top: topPosition,
-    width: "192px",
+    width: "188px",
     position: "absolute",
     height: "111px",
     backgroundColor: backgroundColor,

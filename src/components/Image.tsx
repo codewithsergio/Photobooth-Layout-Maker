@@ -127,7 +127,8 @@ const Image: React.FC<ImageProps> = ({
 
       const handleMouseMove = (e: MouseEvent) => {
         if (textIsDragging) {
-          const newY = e.clientY - offset.y;
+          const cursorOffset = 80;
+          const newY = e.clientY - offset.y - cursorOffset;
 
           // Ensure the text stays within the canvas boundaries
           const maxY = height - textRef.current!.offsetHeight;
@@ -170,7 +171,8 @@ const Image: React.FC<ImageProps> = ({
 
       const handleMouseMove = (e: MouseEvent) => {
         if (secondaryTextIsDragging) {
-          const newY = e.clientY - secondaryTextOffset.y;
+          const cursorOffset = 80;
+          const newY = e.clientY - secondaryTextOffset.y - cursorOffset;
 
           // Ensure the text stays within the canvas boundaries
           const maxY = height - secondaryTextRef.current!.offsetHeight;
@@ -221,7 +223,7 @@ const Image: React.FC<ImageProps> = ({
       >
         <div>
           <Square backgroundColor={borderColor} topPosition={27} />
-          <Square backgroundColor={borderColor} topPosition={144} />
+          <Square backgroundColor={borderColor} topPosition={143} />
           <Square backgroundColor={borderColor} topPosition={260} />
           <Square backgroundColor={borderColor} topPosition={377} />
         </div>
